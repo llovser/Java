@@ -5,6 +5,8 @@ import java.util.Objects;
 /** Одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
 public class Clothes {
 
+    private static final String[] SIZES = {"XS", "S", "M", "L", "XL", "XXL"};
+
     private String brand;
     private String type;
     private String size;
@@ -20,13 +22,13 @@ public class Clothes {
      */
     public Clothes(String brand, String type, String size, String color,
                    String material, double price, int quantity) {
-        this.brand = brand;
-        this.type = type;
-        this.size = size;
-        this.color = color;
-        this.material = material;
-        this.price = price;
-        this.quantity = quantity;
+        this.brand = checkText(brand, "Бренд");
+        this.type = checkText(type, "Тип");
+        this.size = checkSize(size);
+        this.color = checkText(color, "Колір");
+        this.material = checkText(material, "Матеріал");
+        this.price = checkPrice(price);
+        this.quantity = checkQuantity(quantity);
     }
 
     /** Повертає бренд. */
@@ -36,7 +38,7 @@ public class Clothes {
 
     /** Встановлює бренд (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setBrand(String brand) {
-        this.brand = brand;
+        this.brand = checkText(brand, "Бренд");
     }
 
     /** Повертає тип одягу. */
@@ -46,7 +48,7 @@ public class Clothes {
 
     /** Встановлює тип (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setType(String type) {
-        this.type = type;
+        this.type = checkText(type, "Тип");
     }
 
     /** Повертає розмір. */
@@ -56,7 +58,7 @@ public class Clothes {
 
     /** Встановлює розмір (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setSize(String size) {
-        this.size = size;
+        this.size = checkSize(size);
     }
 
     /** Повертає колір. */
@@ -66,7 +68,7 @@ public class Clothes {
 
     /** Встановлює колір (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setColor(String color) {
-        this.color = color;
+        this.color = checkText(color, "Колір");
     }
 
     /** Повертає матеріал. */
@@ -76,7 +78,7 @@ public class Clothes {
 
     /** Встановлює матеріал (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setMaterial(String material) {
-        this.material = material;
+        this.material = checkText(material, "Матеріал");
     }
 
     /** Повертає ціну. */
@@ -86,7 +88,7 @@ public class Clothes {
 
     /** Встановлює ціну (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setPrice(double price) {
-        this.price = price;
+        this.price = checkPrice(price);
     }
 
     /** Повертає кількість на складі. */
@@ -96,7 +98,51 @@ public class Clothes {
 
     /** Встановлює кількість (кидає IllegalArgumentException, якщо значення некоректне). */
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        this.quantity = checkQuantity(quantity);
+    }
+
+    /**
+     * Перевіряє, що рядок не порожній, і повертає його без зайвих пробілів.
+     */
+    public static String checkText(String value, String fieldName) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(fieldName + " не може бути порожнім.");
+        }
+        return value.trim();
+    }
+
+    /**
+     * Перевіряє розмір: допустимі XS, S, M, L, XL, XXL (регістр не важливий).
+     */
+    public static String checkSize(String size) {
+        String normalized = checkText(size, "Розмір").toUpperCase();
+        for (String allowed : SIZES) {
+            if (allowed.equals(normalized)) {
+                return normalized;
+            }
+        }
+        throw new IllegalArgumentException("Невідомий розмір: " + size
+                + " (допустимо: XS, S, M, L, XL, XXL).");
+    }
+
+    /**
+     * Перевіряє, що ціна є скінченним додатним числом.
+     */
+    public static double checkPrice(double price) {
+        if (Double.isNaN(price) || Double.isInfinite(price) || price <= 0) {
+            throw new IllegalArgumentException("Ціна має бути додатним числом.");
+        }
+        return price;
+    }
+
+    /**
+     * Перевіряє, що кількість не від'ємна.
+     */
+    public static int checkQuantity(int quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Кількість не може бути від'ємною.");
+        }
+        return quantity;
     }
 
     /** Повертає текстове подання об'єкта. */
