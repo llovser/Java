@@ -11,6 +11,8 @@ public class Main {
     private static final double[] PRICES = {799.99, 1499.0, 3299.5, 1199.0, 1899.99};
     private static final int MIN_COUNT = 1;
     private static final int MAX_COUNT = 100;
+    private static final String[] MATERIALS = {"бавовна", "денім", "поліестер", "вовна", "віскоза"};
+    private static final int[] QUANTITIES = {10, 4, 7, 12, 3};
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -54,6 +56,6 @@ public class Main {
     private static Clothes createSample(int index) {
         int n = index % BRANDS.length;
         double price = PRICES[n] + 100.0 * (index / BRANDS.length);
-        return new Clothes(BRANDS[n], TYPES[n], SIZES[n], COLORS[n], price);
+        return new Clothes(BRANDS[n], TYPES[n], SIZES[n], COLORS[n], MATERIALS[n], price, QUANTITIES[n]);
     }
 }
