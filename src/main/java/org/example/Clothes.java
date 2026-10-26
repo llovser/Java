@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Objects;
+
 public class Clothes {
 
     private String brand;
@@ -55,4 +57,32 @@ public class Clothes {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Clothes{brand='" + brand + "', type='" + type + "', size='" + size
+                + "', color='" + color + "', price=" + price + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Clothes other = (Clothes) o;
+        return Double.compare(price, other.price) == 0
+                && Objects.equals(brand, other.brand)
+                && Objects.equals(type, other.type)
+                && Objects.equals(size, other.size)
+                && Objects.equals(color, other.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(brand, type, size, color, price);
+    }
+
 }
