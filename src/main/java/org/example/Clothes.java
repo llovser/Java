@@ -5,6 +5,7 @@ import java.util.Objects;
 /** Одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
 public class Clothes {
 
+    private static int count;
     private String brand;
     private String type;
     private Size size;
@@ -27,6 +28,11 @@ public class Clothes {
         this.material = checkText(material, "Матеріал");
         this.price = checkPrice(price);
         this.quantity = checkQuantity(quantity);
+        count++;
+    }
+
+    public static int getCount() {
+        return count;
     }
 
     /** Повертає бренд. */
