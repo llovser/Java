@@ -8,9 +8,15 @@ import java.util.function.UnaryOperator;
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
 
-    private static final int CREATE = 1;
-    private static final int SHOW = 2;
-    private static final int EXIT = 3;
+    private static final int SEARCH = 1;
+    private static final int CREATE = 2;
+    private static final int SHOW = 3;
+    private static final int EXIT = 4;
+
+    private static final int BY_BRAND = 1;
+    private static final int BY_CATEGORY = 2;
+    private static final int BY_SIZE = 3;
+    private static final int BY_PRICE = 4;
 
     private static final int BACK = 0;
     private static final int TYPE_CLOTHES = 1;
@@ -41,8 +47,11 @@ public class Main {
                 case EXIT:
                     running = false;
                     break;
+                case SEARCH:
+                    searchObjects(scanner, wardrobe);
+                    break;
                 default:
-                    System.out.println("Помилка: оберіть пункт від 1 до 3.");
+                    System.out.println("Помилка: оберіть пункт від 1 до 4.");
                     break;
             }
         }
@@ -56,9 +65,10 @@ public class Main {
     private static void printMenu() {
         System.out.println();
         System.out.println("=== Меню ===");
-        System.out.println("1. Створити новий об'єкт");
-        System.out.println("2. Вивести інформацію про всі об'єкти");
-        System.out.println("3. Завершити роботу");
+        System.out.println("1. Пошук об'єкта");
+        System.out.println("2. Створити новий об'єкт");
+        System.out.println("3. Вивести інформацію про всі об'єкти");
+        System.out.println("4. Завершити роботу");
     }
 
     /** Дає обрати тип об'єкта, зчитує його дані й додає об'єкт до списку (0 - назад). */
@@ -138,6 +148,66 @@ public class Main {
             }
         }
         return result;
+    }
+
+    /** Дає обрати критерій пошуку, виконує його й виводить результат (0 - назад). */
+    private static void searchObjects(Scanner scanner, List<Clothes> wardrobe) {
+        System.out.println();
+        System.out.println("--- Пошук об'єкта ---");
+        System.out.println("1. За брендом");
+        System.out.println("2. За категорією");
+        System.out.println("3. За розміром");
+        System.out.println("4. За діапазоном ціни");
+        System.out.println("0. Назад до головного меню");
+        List<Clothes> found;
+        switch (readInt(scanner, "Оберіть критерій", BACK, BY_PRICE)) {
+            case BY_BRAND:
+                found = findByBrand(wardrobe, readField(scanner, "Бренд (або його частина): ",
+                        v -> Clothes.checkText(v, "Бренд")));
+                break;
+            case BY_CATEGORY:
+                found = findByCategory(wardrobe, readField(scanner,
+                        "Категорія (Одяг, Штани, Сорочка, Куртка, Сукня): ",
+                        v -> Clothes.checkText(v, "Категорія")));
+                break;
+            case BY_SIZE:
+                found = findBySize(wardrobe, readSize(scanner));
+                break;
+            case BY_PRICE:
+                found = readAndFindByPrice(scanner, wardrobe);
+                break;
+            default:
+                System.out.println("Повернення до головного меню.");
+                return;
+        }
+        printSearchResult(found);
+    }
+
+    /** Зчитує межі ціни (мінімальна не більша за максимальну) і виконує пошук. */
+    private static List<Clothes> readAndFindByPrice(Scanner scanner, List<Clothes> wardrobe) {
+        while (true) {
+            System.out.println("Мінімальна ціна:");
+            double min = readPrice(scanner);
+            System.out.println("Максимальна ціна:");
+            double max = readPrice(scanner);
+            if (min <= max) {
+                return findByPrice(wardrobe, min, max);
+            }
+            System.out.println("Помилка: мінімальна ціна не може бути більшою за максимальну.");
+        }
+    }
+
+    /** Виводить знайдені об'єкти або повідомлення, що нічого не знайдено. */
+    private static void printSearchResult(List<Clothes> found) {
+        if (found.isEmpty()) {
+            System.out.println("За вказаним критерієм нічого не знайдено.");
+            return;
+        }
+        System.out.println("Знайдено об'єктів: " + found.size());
+        for (int i = 0; i < found.size(); i++) {
+            Clothes item = found.get(i);
+            System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
+        }
     }
 
     /** Виводить усі об'єкти через toString() або повідомлення, що список порожній. */
