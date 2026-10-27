@@ -139,10 +139,15 @@ public class Clothes {
         return quantity;
     }
 
+    /** Повертає назву категорії; похідні класи перевизначають її. */
+    public String getCategory() {
+        return "Одяг";
+    }
+
     /** Повертає текстове подання об'єкта. */
     @Override
     public String toString() {
-        return "Clothes{brand='" + brand + "', type='" + type + "', size='" + size
+        return getClass().getSimpleName() + "{brand='" + brand + "', type='" + type + "', size='" + size
                 + "', color='" + color + "', material='" + material
                 + "', price=" + price + ", quantity=" + quantity + "}";
     }
