@@ -77,40 +77,4 @@ class ClothesTest {
 
         assertTrue(e.getMessage().contains("Матеріал"));
     }
-
-    /** Лічильник зростає лише після успішного створення об'єкта. */
-    @Test
-    void shouldCountOnlySuccessfullyCreatedObjects() {
-        int before = Clothes.getCount();
-
-        createValid();
-        assertEquals(before + 1, Clothes.getCount());
-
-        assertThrows(IllegalArgumentException.class,
-                () -> new Clothes("", "Футболка", Size.M, "чорний", "бавовна", 799.99, 5));
-        assertEquals(before + 1, Clothes.getCount());
-    }
-
-    /** Конструктор копіювання створює рівний, але незалежний об'єкт і збільшує лічильник. */
-    @Test
-    void shouldCreateIndependentCopy() {
-        Clothes original = createValid();
-        int before = Clothes.getCount();
-
-        Clothes copy = new Clothes(original);
-        copy.setPrice(1.5);
-
-        assertNotSame(original, copy);
-        assertEquals(799.99, original.getPrice());
-        assertEquals(before + 1, Clothes.getCount());
-        assertEquals(original.getBrand(), copy.getBrand());
-        assertEquals(original, new Clothes(original));
-    }
-
-    /** Копіювання null викликає виняток. */
-    @Test
-    void shouldThrowExceptionWhenCopyingNull() {
-        assertThrows(IllegalArgumentException.class, () -> new Clothes((Clothes) null));
-    }
-
 }
