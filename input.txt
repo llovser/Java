@@ -1,0 +1,5 @@
+Clothes;Zara;Топ;S;сірий;бавовна;500.0;1
+Pants;Levi's;M;синій;денім;1500.0;4;100;SLIM
+Shirts;H&M;S;білий;бавовна;900.0;7;LONG;38
+Jacket;North Face;L;чорний;поліестер;6000.0;2;WINTER;true
+Dress;Mango;M;червоний;віскоза;2200.0;3;110;EVENING
