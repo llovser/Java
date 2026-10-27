@@ -1,6 +1,5 @@
 package org.example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.UnaryOperator;
@@ -26,7 +25,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Clothes> wardrobe = new ArrayList<>();
+        List<Clothes> wardrobe = FileStorage.load(FileStorage.FILE_NAME);
         boolean running = true;
 
         while (running) {
@@ -46,7 +45,9 @@ public class Main {
                     break;
             }
         }
-
+        if (FileStorage.save(FileStorage.FILE_NAME, wardrobe)) {
+            System.out.println("Дані збережено у файл " + FileStorage.FILE_NAME + ".");
+        }
         scanner.close();
     }
 
