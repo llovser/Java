@@ -82,8 +82,10 @@ public class Main {
             return;
         }
         for (int i = 0; i < wardrobe.size(); i++) {
-            System.out.println((i + 1) + ". " + wardrobe.get(i));
+            Clothes item = wardrobe.get(i);
+            System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
         }
+        System.out.println("Усього об'єктів: " + wardrobe.size());
     }
 
     /** Зчитує всі поля з клавіатури та створює об'єкт Clothes. */
