@@ -1,7 +1,5 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.function.UnaryOperator;
 
@@ -19,7 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Clothes> wardrobe = new ArrayList<>();
+        Wardrobe wardrobe = new Wardrobe("Мій гардероб");
         boolean running = true;
 
         while (running) {
@@ -64,11 +62,12 @@ public class Main {
     }
 
     /** Виводить усі об'єкти через toString() або повідомлення, що список порожній. */
-    private static void printAll(List<Clothes> wardrobe) {
+    private static void printAll(Wardrobe wardrobe) {
         if (wardrobe.isEmpty()) {
             System.out.println("Список порожній.");
             return;
         }
+        System.out.println("Гардероб: " + wardrobe.getName());
         for (int i = 0; i < wardrobe.size(); i++) {
             System.out.println((i + 1) + ". " + wardrobe.get(i));
         }
