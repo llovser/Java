@@ -16,6 +16,8 @@ public class Main {
     private static final int TYPE_CLOTHES = 1;
     private static final int TYPE_PANTS = 2;
     private static final int TYPE_SHIRTS = 3;
+    private static final int TYPE_JACKET = 4;
+    private static final int TYPE_DRESS = 5;
 
     /**
      * Показує меню, доки користувач не обере завершення роботи.
@@ -64,8 +66,11 @@ public class Main {
         System.out.println("1. Одяг (базовий клас)");
         System.out.println("2. Штани (Pants)");
         System.out.println("3. Сорочка (Shirts)");
+        System.out.println("4. Куртка (Jacket)");
+        System.out.println("5. Сукня (Dress)");
         System.out.println("0. Назад до головного меню");
-        switch (readInt(scanner, "Оберіть тип", BACK, TYPE_SHIRTS)) {
+
+        switch (readInt(scanner, "Оберіть тип", BACK, TYPE_DRESS)) {
             case TYPE_CLOTHES:
                 wardrobe.add(readClothes(scanner));
                 break;
@@ -74,6 +79,12 @@ public class Main {
                 break;
             case TYPE_SHIRTS:
                 wardrobe.add(readShirts(scanner));
+                break;
+            case TYPE_JACKET:
+                wardrobe.add(readJacket(scanner));
+                break;
+            case TYPE_DRESS:
+                wardrobe.add(readDress(scanner));
                 break;
             default:
                 System.out.println("Повернення до головного меню.");
@@ -103,6 +114,47 @@ public class Main {
             System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
         }
         System.out.println("Усього об'єктів: " + wardrobe.size());
+    }
+
+    /** Зчитує куртку: спільні поля одягу, сезон і наявність капюшона. */
+    private static Jacket readJacket(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        Season season = readEnum(scanner, "Сезон", Season.values());
+        boolean hooded = readYesNo(scanner, "З капюшоном?");
+        return new Jacket(brand, size, color, material, price, quantity, season, hooded);
+    }
+
+    /** Зчитує сукню: спільні поля одягу, довжину та призначення. */
+    private static Dress readDress(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        int length = readInt(scanner, "Довжина, см", Dress.MIN_LENGTH, Dress.MAX_LENGTH);
+        Occasion occasion = readEnum(scanner, "Призначення", Occasion.values());
+        return new Dress(brand, size, color, material, price, quantity, length, occasion);
+    }
+
+    /** Зчитує відповідь так/ні, повторюючи запит для іншого вводу. */
+    private static boolean readYesNo(Scanner scanner, String question) {
+        while (true) {
+            System.out.print(question + " (так/ні): ");
+            String answer = scanner.nextLine().trim().toLowerCase();
+            if (answer.equals("так") || answer.equals("т") || answer.equals("y")) {
+                return true;
+            }
+            if (answer.equals("ні") || answer.equals("н") || answer.equals("n")) {
+                return false;
+            }
+            System.out.println("Помилка: введіть \"так\" або \"ні\".");
+        }
     }
 
     /** Зчитує всі поля з клавіатури та створює об'єкт Clothes. */
