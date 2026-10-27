@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.UnaryOperator;
@@ -94,14 +95,49 @@ public class Main {
         System.out.println("Об'єкт створено.");
     }
 
-    /** Зчитує пункт меню; для нечислового вводу повертає -1. */
-    private static int readMenuChoice(Scanner scanner) {
-        System.out.print("Ваш вибір: ");
-        try {
-            return Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            return -1;
+    /** Повертає об'єкти, бренд яких містить заданий текст (без урахування регістру). */
+    static List<Clothes> findByBrand(List<Clothes> wardrobe, String text) {
+        List<Clothes> result = new ArrayList<>();
+        String part = text.trim().toLowerCase();
+        for (Clothes item : wardrobe) {
+            if (item.getBrand().toLowerCase().contains(part)) {
+                result.add(item);
+            }
         }
+        return result;
+    }
+
+    /** Повертає об'єкти заданої категорії (без урахування регістру). */
+    static List<Clothes> findByCategory(List<Clothes> wardrobe, String category) {
+        List<Clothes> result = new ArrayList<>();
+        for (Clothes item : wardrobe) {
+            if (item.getCategory().equalsIgnoreCase(category.trim())) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    /** Повертає об'єкти заданого розміру. */
+    static List<Clothes> findBySize(List<Clothes> wardrobe, Size size) {
+        List<Clothes> result = new ArrayList<>();
+        for (Clothes item : wardrobe) {
+            if (item.getSize() == size) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    /** Повертає об'єкти, ціна яких лежить у межах від min до max включно. */
+    static List<Clothes> findByPrice(List<Clothes> wardrobe, double min, double max) {
+        List<Clothes> result = new ArrayList<>();
+        for (Clothes item : wardrobe) {
+            if (item.getPrice() >= min && item.getPrice() <= max) {
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     /** Виводить усі об'єкти через toString() або повідомлення, що список порожній. */
@@ -115,6 +151,16 @@ public class Main {
             System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
         }
         System.out.println("Усього об'єктів: " + wardrobe.size());
+    }
+
+    /** Зчитує пункт меню; для нечислового вводу повертає -1. */
+    private static int readMenuChoice(Scanner scanner) {
+        System.out.print("Ваш вибір: ");
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     /** Зчитує куртку: спільні поля одягу, сезон і наявність капюшона. */
