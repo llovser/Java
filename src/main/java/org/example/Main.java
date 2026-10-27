@@ -8,11 +8,16 @@ import java.util.function.UnaryOperator;
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
 
-    private static final int CREATE_CLOTHES = 1;
-    private static final int CREATE_PANTS = 2;
-    private static final int CREATE_SHIRTS = 3;
-    private static final int SHOW = 4;
-    private static final int EXIT = 5;
+    private static final int CREATE = 1;
+    private static final int SHOW = 2;
+    private static final int EXIT = 3;
+
+    private static final int BACK = 0;
+    private static final int TYPE_CLOTHES = 1;
+    private static final int TYPE_PANTS = 2;
+    private static final int TYPE_SHIRTS = 3;
+    private static final int TYPE_JACKET = 4;
+    private static final int TYPE_DRESS = 5;
 
     /**
      * Показує меню, доки користувач не обере завершення роботи.
@@ -27,17 +32,8 @@ public class Main {
         while (running) {
             printMenu();
             switch (readMenuChoice(scanner)) {
-                case CREATE_CLOTHES:
-                    wardrobe.add(readClothes(scanner));
-                    System.out.println("Об'єкт створено.");
-                    break;
-                case CREATE_PANTS:
-                    wardrobe.add(readPants(scanner));
-                    System.out.println("Штани створено.");
-                    break;
-                case CREATE_SHIRTS:
-                    wardrobe.add(readShirts(scanner));
-                    System.out.println("Сорочку створено.");
+                case CREATE:
+                    createObject(scanner, wardrobe);
                     break;
                 case SHOW:
                     printAll(wardrobe);
@@ -46,7 +42,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    System.out.println("Помилка: оберіть пункт від 1 до 5.");
+                    System.out.println("Помилка: оберіть пункт від 1 до 3.");
                     break;
             }
         }
@@ -58,11 +54,43 @@ public class Main {
     private static void printMenu() {
         System.out.println();
         System.out.println("=== Меню ===");
-        System.out.println("1. Створити одяг (базовий клас)");
-        System.out.println("2. Створити штани (Pants)");
-        System.out.println("3. Створити сорочку (Shirts)");
-        System.out.println("4. Вивести інформацію про всі об'єкти");
-        System.out.println("5. Завершити роботу");
+        System.out.println("1. Створити новий об'єкт");
+        System.out.println("2. Вивести інформацію про всі об'єкти");
+        System.out.println("3. Завершити роботу");
+    }
+
+    /** Дає обрати тип об'єкта, зчитує його дані й додає об'єкт до списку (0 - назад). */
+    private static void createObject(Scanner scanner, List<Clothes> wardrobe) {
+        System.out.println();
+        System.out.println("--- Тип об'єкта ---");
+        System.out.println("1. Одяг (базовий клас)");
+        System.out.println("2. Штани (Pants)");
+        System.out.println("3. Сорочка (Shirts)");
+        System.out.println("4. Куртка (Jacket)");
+        System.out.println("5. Сукня (Dress)");
+        System.out.println("0. Назад до головного меню");
+
+        switch (readInt(scanner, "Оберіть тип", BACK, TYPE_DRESS)) {
+            case TYPE_CLOTHES:
+                wardrobe.add(readClothes(scanner));
+                break;
+            case TYPE_PANTS:
+                wardrobe.add(readPants(scanner));
+                break;
+            case TYPE_SHIRTS:
+                wardrobe.add(readShirts(scanner));
+                break;
+            case TYPE_JACKET:
+                wardrobe.add(readJacket(scanner));
+                break;
+            case TYPE_DRESS:
+                wardrobe.add(readDress(scanner));
+                break;
+            default:
+                System.out.println("Повернення до головного меню.");
+                return;
+        }
+        System.out.println("Об'єкт створено.");
     }
 
     /** Зчитує пункт меню; для нечислового вводу повертає -1. */
@@ -86,6 +114,47 @@ public class Main {
             System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
         }
         System.out.println("Усього об'єктів: " + wardrobe.size());
+    }
+
+    /** Зчитує куртку: спільні поля одягу, сезон і наявність капюшона. */
+    private static Jacket readJacket(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        Season season = readEnum(scanner, "Сезон", Season.values());
+        boolean hooded = readYesNo(scanner, "З капюшоном?");
+        return new Jacket(brand, size, color, material, price, quantity, season, hooded);
+    }
+
+    /** Зчитує сукню: спільні поля одягу, довжину та призначення. */
+    private static Dress readDress(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        int length = readInt(scanner, "Довжина, см", Dress.MIN_LENGTH, Dress.MAX_LENGTH);
+        Occasion occasion = readEnum(scanner, "Призначення", Occasion.values());
+        return new Dress(brand, size, color, material, price, quantity, length, occasion);
+    }
+
+    /** Зчитує відповідь так/ні, повторюючи запит для іншого вводу. */
+    private static boolean readYesNo(Scanner scanner, String question) {
+        while (true) {
+            System.out.print(question + " (так/ні): ");
+            String answer = scanner.nextLine().trim().toLowerCase();
+            if (answer.equals("так") || answer.equals("т") || answer.equals("y")) {
+                return true;
+            }
+            if (answer.equals("ні") || answer.equals("н") || answer.equals("n")) {
+                return false;
+            }
+            System.out.println("Помилка: введіть \"так\" або \"ні\".");
+        }
     }
 
     /** Зчитує всі поля з клавіатури та створює об'єкт Clothes. */
