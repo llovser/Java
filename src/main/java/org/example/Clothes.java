@@ -5,11 +5,9 @@ import java.util.Objects;
 /** Одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
 public class Clothes {
 
-    private static final String[] SIZES = {"XS", "S", "M", "L", "XL", "XXL"};
-
     private String brand;
     private String type;
-    private String size;
+    private Size size;
     private String color;
     private String material;
     private double price;
@@ -20,7 +18,7 @@ public class Clothes {
      *
      * @throws IllegalArgumentException якщо будь-яке значення некоректне
      */
-    public Clothes(String brand, String type, String size, String color,
+    public Clothes(String brand, String type, Size size, String color,
                    String material, double price, int quantity) {
         this.brand = checkText(brand, "Бренд");
         this.type = checkText(type, "Тип");
@@ -52,12 +50,12 @@ public class Clothes {
     }
 
     /** Повертає розмір. */
-    public String getSize() {
+    public Size getSize() {
         return size;
     }
 
     /** Встановлює розмір (кидає IllegalArgumentException, якщо значення некоректне). */
-    public void setSize(String size) {
+    public void setSize(Size size) {
         this.size = checkSize(size);
     }
 
@@ -114,15 +112,11 @@ public class Clothes {
     /**
      * Перевіряє розмір: допустимі XS, S, M, L, XL, XXL (регістр не важливий).
      */
-    public static String checkSize(String size) {
-        String normalized = checkText(size, "Розмір").toUpperCase();
-        for (String allowed : SIZES) {
-            if (allowed.equals(normalized)) {
-                return normalized;
-            }
+    public static Size checkSize(Size size) {
+        if (size == null) {
+            throw new IllegalArgumentException("Розмір не може бути порожнім.");
         }
-        throw new IllegalArgumentException("Невідомий розмір: " + size
-                + " (допустимо: XS, S, M, L, XL, XXL).");
+        return size;
     }
 
     /**

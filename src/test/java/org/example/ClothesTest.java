@@ -9,15 +9,15 @@ class ClothesTest {
 
     /** Створює коректний об'єкт для тестів. */
     private Clothes createValid() {
-        return new Clothes("Nike", "Футболка", "M", "чорний", "бавовна", 799.99, 5);
+        return new Clothes("Nike", "Футболка", Size.M, "чорний", "бавовна", 799.99, 5);
     }
 
-    /** Коректні дані приймаються, розмір приводиться до верхнього регістру. */
+    /** Коректні дані приймаються. */
     @Test
     void shouldCreateObjectWithValidData() {
-        Clothes clothes = new Clothes("Nike", "Футболка", "m", "чорний", "бавовна", 799.99, 5);
+        Clothes clothes = createValid();
 
-        assertEquals("M", clothes.getSize());
+        assertEquals(Size.M, clothes.getSize());
         assertEquals(799.99, clothes.getPrice());
         assertEquals(5, clothes.getQuantity());
     }
@@ -29,7 +29,7 @@ class ClothesTest {
 
         assertThrows(IllegalArgumentException.class, () -> clothes.setPrice(-1));
         assertThrows(IllegalArgumentException.class, () -> clothes.setQuantity(-5));
-        assertThrows(IllegalArgumentException.class, () -> clothes.setSize("XXXL"));
+        assertThrows(IllegalArgumentException.class, () -> clothes.setSize(null));
         assertThrows(IllegalArgumentException.class, () -> clothes.setBrand("   "));
     }
 
@@ -37,13 +37,24 @@ class ClothesTest {
     @Test
     void shouldThrowExceptionWhenInvalidConstructorData() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Clothes("", "Футболка", "M", "чорний", "бавовна", 799.99, 5));
+                () -> new Clothes("", "Футболка", Size.M, "чорний", "бавовна", 799.99, 5));
         assertThrows(IllegalArgumentException.class,
-                () -> new Clothes("Nike", null, "M", "чорний", "бавовна", 799.99, 5));
+                () -> new Clothes("Nike", null, Size.M, "чорний", "бавовна", 799.99, 5));
         assertThrows(IllegalArgumentException.class,
-                () -> new Clothes("Nike", "Футболка", "M", "чорний", "бавовна", 0, 5));
+                () -> new Clothes("Nike", "Футболка", Size.M, "чорний", "бавовна", 0, 5));
         assertThrows(IllegalArgumentException.class,
-                () -> new Clothes("Nike", "Футболка", "M", "чорний", "бавовна", 799.99, -1));
+                () -> new Clothes("Nike", "Футболка", Size.M, "чорний", "бавовна", 799.99, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Clothes("Nike", "Футболка", null, "чорний", "бавовна", 799.99, 5));
+    }
+
+    /** Рядок розбирається у розмір без урахування регістру й пробілів. */
+    @Test
+    void shouldParseSizeIgnoringCaseAndSpaces() {
+        assertEquals(Size.M, Size.fromString(" m "));
+        assertEquals(Size.XXL, Size.fromString("xxl"));
+        assertThrows(IllegalArgumentException.class, () -> Size.fromString("XXXL"));
+        assertThrows(IllegalArgumentException.class, () -> Size.fromString("  "));
     }
 
     /** Після невдалого виклику сеттера старе значення зберігається. */

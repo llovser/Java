@@ -78,7 +78,7 @@ public class Main {
     private static Clothes readClothes(Scanner scanner) {
         String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
         String type = readField(scanner, "Тип: ", v -> Clothes.checkText(v, "Тип"));
-        String size = readField(scanner, "Розмір (XS, S, M, L, XL, XXL): ", Clothes::checkSize);
+        Size size = readSize(scanner);
         String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
         String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
         double price = readPrice(scanner);
@@ -92,6 +92,18 @@ public class Main {
             System.out.print(prompt);
             try {
                 return validator.apply(scanner.nextLine());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Помилка: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Зчитує розмір, повторюючи запит для порожнього або невідомого значення. */
+    private static Size readSize(Scanner scanner) {
+        while (true) {
+            System.out.print("Розмір (XS, S, M, L, XL, XXL): ");
+            try {
+                return Size.fromString(scanner.nextLine());
             } catch (IllegalArgumentException e) {
                 System.out.println("Помилка: " + e.getMessage());
             }
