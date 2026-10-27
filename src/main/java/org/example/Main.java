@@ -8,9 +8,11 @@ import java.util.function.UnaryOperator;
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
 
-    private static final int CREATE = 1;
-    private static final int SHOW = 2;
-    private static final int EXIT = 3;
+    private static final int CREATE_CLOTHES = 1;
+    private static final int CREATE_PANTS = 2;
+    private static final int CREATE_SHIRTS = 3;
+    private static final int SHOW = 4;
+    private static final int EXIT = 5;
 
     /**
      * Показує меню, доки користувач не обере завершення роботи.
@@ -25,9 +27,17 @@ public class Main {
         while (running) {
             printMenu();
             switch (readMenuChoice(scanner)) {
-                case CREATE:
+                case CREATE_CLOTHES:
                     wardrobe.add(readClothes(scanner));
                     System.out.println("Об'єкт створено.");
+                    break;
+                case CREATE_PANTS:
+                    wardrobe.add(readPants(scanner));
+                    System.out.println("Штани створено.");
+                    break;
+                case CREATE_SHIRTS:
+                    wardrobe.add(readShirts(scanner));
+                    System.out.println("Сорочку створено.");
                     break;
                 case SHOW:
                     printAll(wardrobe);
@@ -36,7 +46,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    System.out.println("Помилка: оберіть пункт від 1 до 3.");
+                    System.out.println("Помилка: оберіть пункт від 1 до 5.");
                     break;
             }
         }
@@ -48,9 +58,11 @@ public class Main {
     private static void printMenu() {
         System.out.println();
         System.out.println("=== Меню ===");
-        System.out.println("1. Створити новий об'єкт");
-        System.out.println("2. Вивести інформацію про всі об'єкти");
-        System.out.println("3. Завершити роботу");
+        System.out.println("1. Створити одяг (базовий клас)");
+        System.out.println("2. Створити штани (Pants)");
+        System.out.println("3. Створити сорочку (Shirts)");
+        System.out.println("4. Вивести інформацію про всі об'єкти");
+        System.out.println("5. Завершити роботу");
     }
 
     /** Зчитує пункт меню; для нечислового вводу повертає -1. */
@@ -84,6 +96,57 @@ public class Main {
         double price = readPrice(scanner);
         int quantity = readQuantity(scanner);
         return new Clothes(brand, type, size, color, material, price, quantity);
+    }
+
+    /** Зчитує штани: спільні поля одягу, довжину та крій. */
+    private static Pants readPants(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        int length = readInt(scanner, "Довжина, см", Pants.MIN_LENGTH, Pants.MAX_LENGTH);
+        Fit fit = readEnum(scanner, "Крій", Fit.values());
+        return new Pants(brand, size, color, material, price, quantity, length, fit);
+    }
+
+    /** Зчитує сорочку: спільні поля одягу, тип рукава та розмір коміра. */
+    private static Shirts readShirts(Scanner scanner) {
+        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        Size size = readSize(scanner);
+        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
+        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        Sleeve sleeve = readEnum(scanner, "Рукав", Sleeve.values());
+        int neckSize = readInt(scanner, "Розмір коміра, см", Shirts.MIN_NECK, Shirts.MAX_NECK);
+        return new Shirts(brand, size, color, material, price, quantity, sleeve, neckSize);
+    }
+
+    /** Зчитує ціле число від min до max, повторюючи запит для некоректного значення. */
+    private static int readInt(Scanner scanner, String name, int min, int max) {
+        while (true) {
+            System.out.print(name + " (від " + min + " до " + max + "): ");
+            try {
+                int value = Integer.parseInt(scanner.nextLine().trim());
+                if (value >= min && value <= max) {
+                    return value;
+                }
+                System.out.println("Помилка: число має бути від " + min + " до " + max + ".");
+            } catch (NumberFormatException e) {
+                System.out.println("Помилка: потрібно ввести ціле число.");
+            }
+        }
+    }
+
+    /** Показує значення перерахування та зчитує вибір за номером. */
+    private static <T extends Enum<T>> T readEnum(Scanner scanner, String name, T[] values) {
+        System.out.println(name + ":");
+        for (int i = 0; i < values.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + values[i]);
+        }
+        return values[readInt(scanner, "Номер", 1, values.length) - 1];
     }
 
     /** Зчитує рядок і повторює запит, доки validator не прийме значення. */
