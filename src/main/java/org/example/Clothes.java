@@ -31,6 +31,22 @@ public class Clothes {
         count++;
     }
 
+    /**
+     * Конструктор копіювання: створює незалежну копію об'єкта.
+     */
+    public Clothes(Clothes other) {
+        this(checkSource(other).brand, other.type, other.size, other.color,
+                other.material, other.price, other.quantity);
+    }
+
+    /** Перевіряє, що об'єкт для копіювання існує. */
+    private static Clothes checkSource(Clothes other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Об'єкт для копіювання не може бути null.");
+        }
+        return other;
+    }
+
     public static int getCount() {
         return count;
     }
