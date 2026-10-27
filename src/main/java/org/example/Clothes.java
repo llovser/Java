@@ -5,7 +5,6 @@ import java.util.Objects;
 /** Одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
 public class Clothes {
 
-    private static int count;
     private String brand;
     private String type;
     private Size size;
@@ -28,27 +27,6 @@ public class Clothes {
         this.material = checkText(material, "Матеріал");
         this.price = checkPrice(price);
         this.quantity = checkQuantity(quantity);
-        count++;
-    }
-
-    /**
-     * Конструктор копіювання: створює незалежну копію об'єкта.
-     */
-    public Clothes(Clothes other) {
-        this(checkSource(other).brand, other.type, other.size, other.color,
-                other.material, other.price, other.quantity);
-    }
-
-    /** Перевіряє, що об'єкт для копіювання існує. */
-    private static Clothes checkSource(Clothes other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Об'єкт для копіювання не може бути null.");
-        }
-        return other;
-    }
-
-    public static int getCount() {
-        return count;
     }
 
     /** Повертає бренд. */
@@ -161,10 +139,15 @@ public class Clothes {
         return quantity;
     }
 
+    /** Повертає назву категорії; похідні класи перевизначають її. */
+    public String getCategory() {
+        return "Одяг";
+    }
+
     /** Повертає текстове подання об'єкта. */
     @Override
     public String toString() {
-        return "Clothes{brand='" + brand + "', type='" + type + "', size='" + size
+        return getClass().getSimpleName() + "{brand='" + brand + "', type='" + type + "', size='" + size
                 + "', color='" + color + "', material='" + material
                 + "', price=" + price + ", quantity=" + quantity + "}";
     }
