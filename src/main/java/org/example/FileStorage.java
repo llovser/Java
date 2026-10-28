@@ -19,9 +19,6 @@ public class FileStorage {
     public static String toLine(Clothes item) {
         StringBuilder line = new StringBuilder(item.getClass().getSimpleName());
         append(line, item.getBrand());
-        if (item.getClass() == Clothes.class) {
-            append(line, item.getType());
-        }
         append(line, item.getSize().name());
         append(line, item.getColor());
         append(line, item.getMaterial());
@@ -56,10 +53,6 @@ public class FileStorage {
         List<String> f = split(line);
         String type = f.get(0);
         switch (type) {
-            case "Clothes":
-                expect(f, 8);
-                return new Clothes(f.get(1), f.get(2), size(f.get(3)), f.get(4), f.get(5),
-                        number(f.get(6)), integer(f.get(7)));
             case "Pants":
                 expect(f, 9);
                 return new Pants(f.get(1), size(f.get(2)), f.get(3), f.get(4), number(f.get(5)),
