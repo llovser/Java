@@ -32,13 +32,4 @@ class DressTest {
         assertThrows(IllegalArgumentException.class, () -> dress.setLength(500));
         assertThrows(IllegalArgumentException.class, () -> dress.setOccasion(null));
     }
-
-    @Test
-    void shouldBehavePolymorphically() {
-        Clothes clothes = createValid();
-
-        assertEquals("Сукня", clothes.getCategory());
-        assertTrue(clothes.toString().startsWith("Dress{"));
-        assertTrue(clothes.toString().contains("occasion=EVENING"));
-    }
 }

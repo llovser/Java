@@ -39,16 +39,6 @@ class PantsTest {
         assertThrows(IllegalArgumentException.class, () -> pants.setFit(null));
     }
 
-    /** Через посилання на базовий тип викликаються перевизначені методи. */
-    @Test
-    void shouldBehavePolymorphically() {
-        Clothes clothes = createValid();
-
-        assertEquals("Штани", clothes.getCategory());
-        assertTrue(clothes.toString().startsWith("Pants{"));
-        assertTrue(clothes.toString().contains("length=100"));
-    }
-
     /** equals враховує додаткові поля та клас об'єкта. */
     @Test
     void shouldCompareByAllFieldsAndClass() {
@@ -56,7 +46,7 @@ class PantsTest {
         Pants same = createValid();
         Pants other = createValid();
         other.setFit(Fit.LOOSE);
-        Clothes plain = new Clothes("Levi's", "Штани", Size.M, "синій", "денім", 1500, 4);
+        Clothes plain = new Shirts("Levi's", Size.M, "синій", "денім", 1500, 4, Sleeve.LONG, 40);
 
         assertEquals(first, same);
         assertEquals(first.hashCode(), same.hashCode());

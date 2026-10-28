@@ -2,8 +2,8 @@ package org.example;
 
 import java.util.Objects;
 
-/** Одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
-public class Clothes {
+/** Абстрактний одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
+public abstract class Clothes implements Comparable<Clothes> {
 
     private String brand;
     private String type;
@@ -139,9 +139,35 @@ public class Clothes {
         return quantity;
     }
 
-    /** Повертає назву категорії; похідні класи перевизначають її. */
-    public String getCategory() {
-        return "Одяг";
+    /** Повертає назву категорії; кожен похідний клас реалізує її. */
+    public abstract String getCategory();
+
+    /**
+     * Порівнює товари за брендом (без урахування регістру); за однакового бренду
+     * порядок визначають тип, розмір, колір, матеріал і ціна.
+     */
+    @Override
+    public int compareTo(Clothes other) {
+        int result = brand.compareToIgnoreCase(other.brand);
+        if (result == 0) {
+            result = brand.compareTo(other.brand);
+        }
+        if (result == 0) {
+            result = type.compareTo(other.type);
+        }
+        if (result == 0) {
+            result = size.compareTo(other.size);
+        }
+        if (result == 0) {
+            result = color.compareTo(other.color);
+        }
+        if (result == 0) {
+            result = material.compareTo(other.material);
+        }
+        if (result == 0) {
+            result = Double.compare(price, other.price);
+        }
+        return result;
     }
 
     /** Повертає текстове подання об'єкта. */

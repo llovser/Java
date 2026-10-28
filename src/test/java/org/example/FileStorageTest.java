@@ -16,7 +16,7 @@ class FileStorageTest {
 
     private List<Clothes> sample() {
         List<Clothes> list = new ArrayList<>();
-        list.add(new Clothes("Zara", "Топ", Size.S, "сірий", "бавовна", 500.5, 1));
+        list.add(new Shirts("Zara", Size.S, "сірий", "бавовна", 500.5, 1, Sleeve.SHORT, 40));
         list.add(new Pants("Levi's", Size.M, "синій", "денім", 1500, 4, 100, Fit.SLIM));
         list.add(new Shirts("H&M", Size.S, "білий", "бавовна", 900, 7, Sleeve.LONG, 38));
         list.add(new Jacket("North Face", Size.L, "чорний", "поліестер", 6000, 2, Season.WINTER, true));
@@ -36,7 +36,7 @@ class FileStorageTest {
 
     @Test
     void shouldKeepSeparatorAndBackslashInText() {
-        Clothes item = new Clothes("A;B\\C", "Топ", Size.M, "c", "m", 1, 1);
+        Clothes item = new Jacket("A;B\\C", Size.M, "c", "m", 1, 1, Season.SUMMER, false);
 
         assertEquals(item, FileStorage.parseLine(FileStorage.toLine(item)));
     }

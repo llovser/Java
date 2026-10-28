@@ -11,7 +11,7 @@ class SearchTest {
 
     private Store createStore() {
         Store store = new Store("Тест");
-        store.addNewClothes(new Clothes("Zara", "Топ", Size.S, "сірий", "бавовна", 500, 1), 1);
+        store.addNewClothes(new Shirts("Zara", Size.S, "сірий", "бавовна", 500, 1, Sleeve.SHORT, 40), 1);
         store.addNewClothes(new Pants("Levi's", Size.M, "синій", "денім", 1500, 4, 100, Fit.SLIM), 4);
         store.addNewClothes(new Shirts("H&M", Size.S, "білий", "бавовна", 900, 7, Sleeve.LONG, 38), 7);
         store.addNewClothes(new Jacket("North Face", Size.L, "чорний", "поліестер", 6000, 2, Season.WINTER, true), 2);

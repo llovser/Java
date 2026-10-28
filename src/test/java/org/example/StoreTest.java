@@ -38,7 +38,7 @@ class StoreTest {
         Store store = new Store("Тест");
         store.addNewClothes(jeans(1), 1);
         store.addNewClothes(new Pants("Levi's", Size.M, "синій", "денім", 1500, 1, 100, Fit.LOOSE), 2);
-        store.addNewClothes(new Clothes("Levi's", "Штани", Size.M, "синій", "денім", 1500, 1), 1);
+        store.addNewClothes(new Shirts("Levi's", Size.M, "синій", "денім", 1500, 1, Sleeve.LONG, 40), 1);
 
         assertEquals(3, store.size());
         assertEquals(4, store.getTotalQuantity());

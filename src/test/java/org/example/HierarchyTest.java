@@ -13,16 +13,15 @@ class HierarchyTest {
     @Test
     void shouldStoreAllFiveTypesInOneList() {
         List<Clothes> list = new ArrayList<>();
-        list.add(new Clothes("Zara", "Топ", Size.S, "сірий", "бавовна", 500, 1));
         list.add(new Pants("Levi's", Size.M, "синій", "денім", 1500, 4, 100, Fit.SLIM));
         list.add(new Shirts("H&M", Size.S, "білий", "бавовна", 900, 7, Sleeve.LONG, 38));
         list.add(new Jacket("North Face", Size.L, "чорний", "поліестер", 6000, 2, Season.WINTER, true));
         list.add(new Dress("Mango", Size.M, "червоний", "віскоза", 2200, 3, 110, Occasion.EVENING));
 
-        String[] expected = {"Одяг", "Штани", "Сорочка", "Куртка", "Сукня"};
-        String[] names = {"Clothes{", "Pants{", "Shirts{", "Jacket{", "Dress{"};
+        String[] expected = {"Штани", "Сорочка", "Куртка", "Сукня"};
+        String[] names = {"Pants{", "Shirts{", "Jacket{", "Dress{"};
 
-        assertEquals(5, list.size());
+        assertEquals(4, list.size());
         for (int i = 0; i < list.size(); i++) {
             assertEquals(expected[i], list.get(i).getCategory());
             assertTrue(list.get(i).toString().startsWith(names[i]));
@@ -31,7 +30,7 @@ class HierarchyTest {
 
     @Test
     void shouldNotEqualObjectsOfDifferentClasses() {
-        Clothes base = new Clothes("A", "Куртка", Size.M, "c", "m", 1, 1);
+        Clothes base = new Pants("A", Size.M, "c", "m", 1, 1, 100, Fit.SLIM);
         Jacket jacket = new Jacket("A", Size.M, "c", "m", 1, 1, Season.SUMMER, false);
 
         assertFalse(base.equals(jacket));
