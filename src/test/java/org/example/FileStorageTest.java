@@ -56,35 +56,48 @@ class FileStorageTest {
     }
 
     @Test
-    void shouldSaveAndLoadWholeCollection() throws IOException {
+    void shouldSaveAndLoadWholeStore() throws IOException {
         File file = File.createTempFile("clothes", ".txt");
         file.deleteOnExit();
-        List<Clothes> list = sample();
+        Store store = new Store("Тест");
+        for (Clothes item : sample()) {
+            store.addNewClothes(item, item.getQuantity());
+        }
 
-        assertTrue(FileStorage.save(file.getPath(), list));
+        assertTrue(FileStorage.save(file.getPath(), store));
+        Store loaded = new Store("Інший");
+        FileStorage.load(file.getPath(), loaded);
 
-        assertEquals(list, FileStorage.load(file.getPath()));
+        assertEquals(store.getItems(), loaded.getItems());
+        assertEquals(store.getTotalQuantity(), loaded.getTotalQuantity());
     }
 
     @Test
-    void shouldSkipBadLinesAndLoadTheRest() throws IOException {
+    void shouldSkipBadLinesAndMergeDuplicates() throws IOException {
         File file = File.createTempFile("clothes", ".txt");
         file.deleteOnExit();
         String text = "Pants;Levi's;M;синій;денім;1500.0;4;100;SLIM\n"
                 + "сміття\n"
                 + "\n"
-                + "Dress;Mango;M;червоний;віскоза;2200.0;3;110;EVENING\n";
+                + "Dress;Mango;M;червоний;віскоза;2200.0;3;110;EVENING\n"
+                + "Pants;Levi's;M;синій;денім;1500.0;6;100;SLIM\n"
+                + "Pants;Levi's;M;синій;денім;1500.0;0;100;SLIM\n";
         Files.write(file.toPath(), text.getBytes(StandardCharsets.UTF_8));
+        Store store = new Store("Тест");
 
-        List<Clothes> loaded = FileStorage.load(file.getPath());
+        FileStorage.load(file.getPath(), store);
 
-        assertEquals(2, loaded.size());
-        assertEquals("Штани", loaded.get(0).getCategory());
-        assertEquals("Сукня", loaded.get(1).getCategory());
+        assertEquals(2, store.size());
+        assertEquals(10, store.getItems().get(0).getQuantity());
+        assertEquals("Сукня", store.getItems().get(1).getCategory());
     }
 
     @Test
-    void shouldReturnEmptyListWhenFileMissing() {
-        assertTrue(FileStorage.load("no_such_file_12345.txt").isEmpty());
+    void shouldKeepStoreEmptyWhenFileMissing() {
+        Store store = new Store("Тест");
+
+        FileStorage.load("no_such_file_12345.txt", store);
+
+        assertEquals(0, store.size());
     }
 }

@@ -82,21 +82,20 @@ public class FileStorage {
     }
 
     /**
-     * Зчитує об'єкти з файлу; некоректні рядки пропускає з повідомленням.
-     * Якщо файлу немає або його не вдалося прочитати, повертає порожній список.
+     * Зчитує товари з файлу й додає їх у магазин через addNewClothes; некоректні рядки пропускає з повідомленням.
+     * Якщо файлу немає або його не вдалося прочитати, магазин залишається без змін.
      */
-    public static List<Clothes> load(String fileName) {
-        List<Clothes> result = new ArrayList<>();
+    public static void load(String fileName, Store store) {
         if (!Files.exists(Paths.get(fileName))) {
-            System.out.println("Файл " + fileName + " не знайдено, починаємо з порожнього списку.");
-            return result;
+            System.out.println("Файл " + fileName + " не знайдено, починаємо з порожнього магазину.");
+            return;
         }
         List<String> lines;
         try {
             lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.out.println("Помилка читання файлу: " + e.getMessage());
-            return result;
+            return;
         }
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
@@ -104,18 +103,18 @@ public class FileStorage {
                 continue;
             }
             try {
-                result.add(parseLine(line));
+                Clothes item = parseLine(line);
+                store.addNewClothes(item, item.getQuantity());
             } catch (IllegalArgumentException e) {
                 System.out.println("Рядок " + (i + 1) + " пропущено: " + e.getMessage());
             }
         }
-        return result;
     }
 
-    /** Записує всі об'єкти у файл (по одному в рядку); повертає false, якщо запис не вдався. */
-    public static boolean save(String fileName, List<Clothes> items) {
+    /** Записує всі товари магазину у файл (по одному в рядку); повертає false, якщо запис не вдався. */
+    public static boolean save(String fileName, Store store) {
         List<String> lines = new ArrayList<>();
-        for (Clothes item : items) {
+        for (Clothes item : store.getItems()) {
             lines.add(toLine(item));
         }
         try {

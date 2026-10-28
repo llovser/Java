@@ -152,7 +152,7 @@ public class Clothes {
                 + "', price=" + price + ", quantity=" + quantity + "}";
     }
 
-    /** Порівнює об'єкти за всіма полями. */
+    /** Порівнює товари за всіма полями, крім кількості на складі. */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -163,7 +163,6 @@ public class Clothes {
         }
         Clothes other = (Clothes) o;
         return Double.compare(price, other.price) == 0
-                && quantity == other.quantity
                 && Objects.equals(brand, other.brand)
                 && Objects.equals(type, other.type)
                 && Objects.equals(size, other.size)
@@ -174,6 +173,6 @@ public class Clothes {
     /** Повертає хеш-код, узгоджений з equals. */
     @Override
     public int hashCode() {
-        return Objects.hash(brand, type, size, color, material, price, quantity);
+        return Objects.hash(brand, type, size, color, material, price);
     }
 }

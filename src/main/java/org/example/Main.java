@@ -1,6 +1,5 @@
 package org.example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.UnaryOperator;
@@ -32,30 +31,31 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Clothes> wardrobe = FileStorage.load(FileStorage.FILE_NAME);
+        Store store = new Store("Магазин одягу");
+        FileStorage.load(FileStorage.FILE_NAME, store);
         boolean running = true;
 
         while (running) {
             printMenu();
             switch (readMenuChoice(scanner)) {
+                case SEARCH:
+                    searchObjects(scanner, store);
+                    break;
                 case CREATE:
-                    createObject(scanner, wardrobe);
+                    createObject(scanner, store);
                     break;
                 case SHOW:
-                    printAll(wardrobe);
+                    printAll(store);
                     break;
                 case EXIT:
                     running = false;
-                    break;
-                case SEARCH:
-                    searchObjects(scanner, wardrobe);
                     break;
                 default:
                     System.out.println("Помилка: оберіть пункт від 1 до 4.");
                     break;
             }
         }
-        if (FileStorage.save(FileStorage.FILE_NAME, wardrobe)) {
+        if (FileStorage.save(FileStorage.FILE_NAME, store)) {
             System.out.println("Дані збережено у файл " + FileStorage.FILE_NAME + ".");
         }
         scanner.close();
@@ -71,8 +71,8 @@ public class Main {
         System.out.println("4. Завершити роботу");
     }
 
-    /** Дає обрати тип об'єкта, зчитує його дані й додає об'єкт до списку (0 - назад). */
-    private static void createObject(Scanner scanner, List<Clothes> wardrobe) {
+    /** Дає обрати тип об'єкта, зчитує його дані й додає товар у магазин (0 - назад). */
+    private static void createObject(Scanner scanner, Store store) {
         System.out.println();
         System.out.println("--- Тип об'єкта ---");
         System.out.println("1. Одяг (базовий клас)");
@@ -81,77 +81,45 @@ public class Main {
         System.out.println("4. Куртка (Jacket)");
         System.out.println("5. Сукня (Dress)");
         System.out.println("0. Назад до головного меню");
-
+        Clothes created;
         switch (readInt(scanner, "Оберіть тип", BACK, TYPE_DRESS)) {
             case TYPE_CLOTHES:
-                wardrobe.add(readClothes(scanner));
+                created = readClothes(scanner);
                 break;
             case TYPE_PANTS:
-                wardrobe.add(readPants(scanner));
+                created = readPants(scanner);
                 break;
             case TYPE_SHIRTS:
-                wardrobe.add(readShirts(scanner));
+                created = readShirts(scanner);
                 break;
             case TYPE_JACKET:
-                wardrobe.add(readJacket(scanner));
+                created = readJacket(scanner);
                 break;
             case TYPE_DRESS:
-                wardrobe.add(readDress(scanner));
+                created = readDress(scanner);
                 break;
             default:
                 System.out.println("Повернення до головного меню.");
                 return;
         }
-        System.out.println("Об'єкт створено.");
+        addToStore(store, created);
     }
 
-    /** Повертає об'єкти, бренд яких містить заданий текст (без урахування регістру). */
-    static List<Clothes> findByBrand(List<Clothes> wardrobe, String text) {
-        List<Clothes> result = new ArrayList<>();
-        String part = text.trim().toLowerCase();
-        for (Clothes item : wardrobe) {
-            if (item.getBrand().toLowerCase().contains(part)) {
-                result.add(item);
+    /** Додає товар у магазин і повідомляє, чи створено нову позицію, чи збільшено кількість. */
+    private static void addToStore(Store store, Clothes created) {
+        try {
+            if (store.addNewClothes(created, created.getQuantity())) {
+                System.out.println("Новий товар додано до магазину.");
+            } else {
+                System.out.println("Такий товар уже є в магазині: кількість збільшено.");
             }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
         }
-        return result;
-    }
-
-    /** Повертає об'єкти заданої категорії (без урахування регістру). */
-    static List<Clothes> findByCategory(List<Clothes> wardrobe, String category) {
-        List<Clothes> result = new ArrayList<>();
-        for (Clothes item : wardrobe) {
-            if (item.getCategory().equalsIgnoreCase(category.trim())) {
-                result.add(item);
-            }
-        }
-        return result;
-    }
-
-    /** Повертає об'єкти заданого розміру. */
-    static List<Clothes> findBySize(List<Clothes> wardrobe, Size size) {
-        List<Clothes> result = new ArrayList<>();
-        for (Clothes item : wardrobe) {
-            if (item.getSize() == size) {
-                result.add(item);
-            }
-        }
-        return result;
-    }
-
-    /** Повертає об'єкти, ціна яких лежить у межах від min до max включно. */
-    static List<Clothes> findByPrice(List<Clothes> wardrobe, double min, double max) {
-        List<Clothes> result = new ArrayList<>();
-        for (Clothes item : wardrobe) {
-            if (item.getPrice() >= min && item.getPrice() <= max) {
-                result.add(item);
-            }
-        }
-        return result;
     }
 
     /** Дає обрати критерій пошуку, виконує його й виводить результат (0 - назад). */
-    private static void searchObjects(Scanner scanner, List<Clothes> wardrobe) {
+    private static void searchObjects(Scanner scanner, Store store) {
         System.out.println();
         System.out.println("--- Пошук об'єкта ---");
         System.out.println("1. За брендом");
@@ -162,19 +130,19 @@ public class Main {
         List<Clothes> found;
         switch (readInt(scanner, "Оберіть критерій", BACK, BY_PRICE)) {
             case BY_BRAND:
-                found = findByBrand(wardrobe, readField(scanner, "Бренд (або його частина): ",
+                found = store.findByBrand(readField(scanner, "Бренд (або його частина): ",
                         v -> Clothes.checkText(v, "Бренд")));
                 break;
             case BY_CATEGORY:
-                found = findByCategory(wardrobe, readField(scanner,
+                found = store.findByCategory(readField(scanner,
                         "Категорія (Одяг, Штани, Сорочка, Куртка, Сукня): ",
                         v -> Clothes.checkText(v, "Категорія")));
                 break;
             case BY_SIZE:
-                found = findBySize(wardrobe, readSize(scanner));
+                found = store.findBySize(readSize(scanner));
                 break;
             case BY_PRICE:
-                found = readAndFindByPrice(scanner, wardrobe);
+                found = readAndFindByPrice(scanner, store);
                 break;
             default:
                 System.out.println("Повернення до головного меню.");
@@ -184,14 +152,14 @@ public class Main {
     }
 
     /** Зчитує межі ціни (мінімальна не більша за максимальну) і виконує пошук. */
-    private static List<Clothes> readAndFindByPrice(Scanner scanner, List<Clothes> wardrobe) {
+    private static List<Clothes> readAndFindByPrice(Scanner scanner, Store store) {
         while (true) {
             System.out.println("Мінімальна ціна:");
             double min = readPrice(scanner);
             System.out.println("Максимальна ціна:");
             double max = readPrice(scanner);
             if (min <= max) {
-                return findByPrice(wardrobe, min, max);
+                return store.findByPrice(min, max);
             }
             System.out.println("Помилка: мінімальна ціна не може бути більшою за максимальну.");
         }
@@ -210,17 +178,19 @@ public class Main {
         }
     }
 
-    /** Виводить усі об'єкти через toString() або повідомлення, що список порожній. */
-    private static void printAll(List<Clothes> wardrobe) {
-        if (wardrobe.isEmpty()) {
-            System.out.println("Список порожній.");
+    /** Виводить усі товари магазину через базовий тип (поліморфізм) або повідомлення, що він порожній. */
+    private static void printAll(Store store) {
+        List<Clothes> items = store.getItems();
+        if (items.isEmpty()) {
+            System.out.println("Магазин порожній.");
             return;
         }
-        for (int i = 0; i < wardrobe.size(); i++) {
-            Clothes item = wardrobe.get(i);
+        System.out.println("Магазин: " + store.getName());
+        for (int i = 0; i < items.size(); i++) {
+            Clothes item = items.get(i);
             System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
         }
-        System.out.println("Усього об'єктів: " + wardrobe.size());
+        System.out.println("Позицій: " + store.size() + ", одиниць товару: " + store.getTotalQuantity());
     }
 
     /** Зчитує пункт меню; для нечислового вводу повертає -1. */
