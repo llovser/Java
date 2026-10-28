@@ -3,6 +3,8 @@ package org.example;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.UnaryOperator;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
@@ -33,6 +35,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Store store = new Store("Магазин одягу");
         FileStorage.load(FileStorage.FILE_NAME, store);
+        DatabaseManager database = connectDatabase(args);
         boolean running = true;
 
         while (running) {
@@ -42,7 +45,7 @@ public class Main {
                     searchObjects(scanner, store);
                     break;
                 case CREATE:
-                    createObject(scanner, store);
+                    createObject(scanner, store, database);
                     break;
                 case SHOW:
                     printAll(store);
@@ -58,6 +61,7 @@ public class Main {
         if (FileStorage.save(FileStorage.FILE_NAME, store)) {
             System.out.println("Дані збережено у файл " + FileStorage.FILE_NAME + ".");
         }
+        closeDatabase(database);
         scanner.close();
     }
 
@@ -71,8 +75,39 @@ public class Main {
         System.out.println("4. Завершити роботу");
     }
 
+    /** Підключається до БД за файлом із args[0]; без файлу або при помилці повертає null. */
+    private static DatabaseManager connectDatabase(String[] args) {
+        if (args.length == 0) {
+            System.out.println("Конфігураційний файл не передано: програма працює без бази даних.");
+            return null;
+        }
+        try {
+            DatabaseManager database = DatabaseManager.connect(args[0]);
+            System.out.println("Підключення до бази даних встановлено.");
+            return database;
+        } catch (IOException e) {
+            System.out.println("Помилка конфігурації: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Помилка підключення до бази даних: " + e.getMessage());
+        }
+        System.out.println("Програма працює без бази даних.");
+        return null;
+    }
+
+    /** Закриває підключення до БД, якщо воно було відкрите. */
+    private static void closeDatabase(DatabaseManager database) {
+        if (database == null) {
+            return;
+        }
+        try {
+            database.close();
+        } catch (SQLException e) {
+            System.out.println("Помилка закриття підключення: " + e.getMessage());
+        }
+    }
+
     /** Дає обрати тип об'єкта, зчитує його дані й додає товар у магазин (0 - назад). */
-    private static void createObject(Scanner scanner, Store store) {
+    private static void createObject(Scanner scanner, Store store, DatabaseManager database) {
         System.out.println();
         System.out.println("--- Тип об'єкта ---");
         System.out.println("1. Одяг (базовий клас)");
@@ -102,11 +137,11 @@ public class Main {
                 System.out.println("Повернення до головного меню.");
                 return;
         }
-        addToStore(store, created);
+        addToStore(store, created, database);
     }
 
-    /** Додає товар у магазин і повідомляє, чи створено нову позицію, чи збільшено кількість. */
-    private static void addToStore(Store store, Clothes created) {
+    /** Додає товар у магазин і, якщо є підключення, зберігає його в БД. */
+    private static void addToStore(Store store, Clothes created, DatabaseManager database) {
         try {
             if (store.addNewClothes(created, created.getQuantity())) {
                 System.out.println("Новий товар додано до магазину.");
@@ -115,6 +150,21 @@ public class Main {
             }
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка: " + e.getMessage());
+            return;
+        }
+        saveToDatabase(database, created);
+    }
+
+    /** Виконує INSERT у БД; помилку виводить на екран, не завершуючи програму. */
+    private static void saveToDatabase(DatabaseManager database, Clothes created) {
+        if (database == null) {
+            return;
+        }
+        try {
+            database.insert(created);
+            System.out.println("Запис збережено в базі даних.");
+        } catch (SQLException e) {
+            System.out.println("Помилка запису в базу даних: " + e.getMessage());
         }
     }
 
