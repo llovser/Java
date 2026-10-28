@@ -10,7 +10,8 @@ public class Main {
     private static final int SEARCH = 1;
     private static final int CREATE = 2;
     private static final int SHOW = 3;
-    private static final int EXIT = 4;
+    private static final int SORTED = 4;
+    private static final int EXIT = 5;
 
     private static final int BY_BRAND = 1;
     private static final int BY_CATEGORY = 2;
@@ -18,11 +19,10 @@ public class Main {
     private static final int BY_PRICE = 4;
 
     private static final int BACK = 0;
-    private static final int TYPE_CLOTHES = 1;
-    private static final int TYPE_PANTS = 2;
-    private static final int TYPE_SHIRTS = 3;
-    private static final int TYPE_JACKET = 4;
-    private static final int TYPE_DRESS = 5;
+    private static final int TYPE_PANTS = 1;
+    private static final int TYPE_SHIRTS = 2;
+    private static final int TYPE_JACKET = 3;
+    private static final int TYPE_DRESS = 4;
 
     /**
      * Показує меню, доки користувач не обере завершення роботи.
@@ -47,11 +47,14 @@ public class Main {
                 case SHOW:
                     printAll(store);
                     break;
+                case SORTED:
+                    printSorted(store);
+                    break;
                 case EXIT:
                     running = false;
                     break;
                 default:
-                    System.out.println("Помилка: оберіть пункт від 1 до 4.");
+                    System.out.println("Помилка: оберіть пункт від 1 до 5.");
                     break;
             }
         }
@@ -68,24 +71,21 @@ public class Main {
         System.out.println("1. Пошук об'єкта");
         System.out.println("2. Створити новий об'єкт");
         System.out.println("3. Вивести інформацію про всі об'єкти");
-        System.out.println("4. Завершити роботу");
+        System.out.println("4. Вивести відсортовану інформацію про всі об'єкти");
+        System.out.println("5. Завершити роботу");
     }
 
     /** Дає обрати тип об'єкта, зчитує його дані й додає товар у магазин (0 - назад). */
     private static void createObject(Scanner scanner, Store store) {
         System.out.println();
         System.out.println("--- Тип об'єкта ---");
-        System.out.println("1. Одяг (базовий клас)");
-        System.out.println("2. Штани (Pants)");
-        System.out.println("3. Сорочка (Shirts)");
-        System.out.println("4. Куртка (Jacket)");
-        System.out.println("5. Сукня (Dress)");
+        System.out.println("1. Штани (Pants)");
+        System.out.println("2. Сорочка (Shirts)");
+        System.out.println("3. Куртка (Jacket)");
+        System.out.println("4. Сукня (Dress)");
         System.out.println("0. Назад до головного меню");
         Clothes created;
         switch (readInt(scanner, "Оберіть тип", BACK, TYPE_DRESS)) {
-            case TYPE_CLOTHES:
-                created = readClothes(scanner);
-                break;
             case TYPE_PANTS:
                 created = readPants(scanner);
                 break;
@@ -135,7 +135,7 @@ public class Main {
                 break;
             case BY_CATEGORY:
                 found = store.findByCategory(readField(scanner,
-                        "Категорія (Одяг, Штани, Сорочка, Куртка, Сукня): ",
+                        "Категорія (Штани, Сорочка, Куртка, Сукня): ",
                         v -> Clothes.checkText(v, "Категорія")));
                 break;
             case BY_SIZE:
@@ -180,7 +180,18 @@ public class Main {
 
     /** Виводить усі товари магазину через базовий тип (поліморфізм) або повідомлення, що він порожній. */
     private static void printAll(Store store) {
+        printItems(store, store.getItems());
+    }
+
+    /** Виводить товари магазину, відсортовані за природним порядком (Comparable), не змінюючи магазин. */
+    private static void printSorted(Store store) {
         List<Clothes> items = store.getItems();
+        items.sort(null);
+        printItems(store, items);
+    }
+
+    /** Виводить список товарів із підсумком або повідомлення, що магазин порожній. */
+    private static void printItems(Store store, List<Clothes> items) {
         if (items.isEmpty()) {
             System.out.println("Магазин порожній.");
             return;
@@ -242,18 +253,6 @@ public class Main {
             }
             System.out.println("Помилка: введіть \"так\" або \"ні\".");
         }
-    }
-
-    /** Зчитує всі поля з клавіатури та створює об'єкт Clothes. */
-    private static Clothes readClothes(Scanner scanner) {
-        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
-        String type = readField(scanner, "Тип: ", v -> Clothes.checkText(v, "Тип"));
-        Size size = readSize(scanner);
-        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
-        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
-        double price = readPrice(scanner);
-        int quantity = readQuantity(scanner);
-        return new Clothes(brand, type, size, color, material, price, quantity);
     }
 
     /** Зчитує штани: спільні поля одягу, довжину та крій. */
