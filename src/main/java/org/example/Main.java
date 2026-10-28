@@ -2,7 +2,6 @@ package org.example;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.function.UnaryOperator;
 
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
@@ -58,6 +57,7 @@ public class Main {
                     break;
             }
         }
+
         if (FileStorage.save(FileStorage.FILE_NAME, store)) {
             System.out.println("Дані збережено у файл " + FileStorage.FILE_NAME + ".");
         }
@@ -73,6 +73,64 @@ public class Main {
         System.out.println("3. Вивести інформацію про всі об'єкти");
         System.out.println("4. Вивести відсортовану інформацію про всі об'єкти");
         System.out.println("5. Завершити роботу");
+    }
+
+    /** Дає обрати критерій пошуку, виконує його й виводить результат (0 - назад). */
+    private static void searchObjects(Scanner scanner, Store store) {
+        System.out.println();
+        System.out.println("--- Пошук об'єкта ---");
+        System.out.println("1. За брендом");
+        System.out.println("2. За категорією");
+        System.out.println("3. За розміром");
+        System.out.println("4. За діапазоном ціни");
+        System.out.println("0. Назад до головного меню");
+        List<Clothes> found;
+        switch (readInt(scanner, "Оберіть критерій", BACK, BY_PRICE)) {
+            case BY_BRAND:
+                found = store.findByBrand(readText(scanner, "Бренд (або його частина): ", "Бренд"));
+                break;
+            case BY_CATEGORY:
+                found = store.findByCategory(readText(scanner,
+                        "Категорія (Штани, Сорочка, Куртка, Сукня): ", "Категорія"));
+                break;
+            case BY_SIZE:
+                found = store.findBySize(readSize(scanner));
+                break;
+            case BY_PRICE:
+                found = readAndFindByPrice(scanner, store);
+                break;
+            default:
+                System.out.println("Повернення до головного меню.");
+                return;
+        }
+        printSearchResult(found);
+    }
+
+    /** Зчитує межі ціни (мінімальна не більша за максимальну) і виконує пошук. */
+    private static List<Clothes> readAndFindByPrice(Scanner scanner, Store store) {
+        while (true) {
+            System.out.println("Мінімальна ціна:");
+            double min = readPrice(scanner);
+            System.out.println("Максимальна ціна:");
+            double max = readPrice(scanner);
+            if (min <= max) {
+                return store.findByPrice(min, max);
+            }
+            System.out.println("Помилка: мінімальна ціна не може бути більшою за максимальну.");
+        }
+    }
+
+    /** Виводить знайдені об'єкти або повідомлення, що нічого не знайдено. */
+    private static void printSearchResult(List<Clothes> found) {
+        if (found.isEmpty()) {
+            System.out.println("За вказаним критерієм нічого не знайдено.");
+            return;
+        }
+        System.out.println("Знайдено об'єктів: " + found.size());
+        for (int i = 0; i < found.size(); i++) {
+            Clothes item = found.get(i);
+            System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
+        }
     }
 
     /** Дає обрати тип об'єкта, зчитує його дані й додає товар у магазин (0 - назад). */
@@ -118,63 +176,13 @@ public class Main {
         }
     }
 
-    /** Дає обрати критерій пошуку, виконує його й виводить результат (0 - назад). */
-    private static void searchObjects(Scanner scanner, Store store) {
-        System.out.println();
-        System.out.println("--- Пошук об'єкта ---");
-        System.out.println("1. За брендом");
-        System.out.println("2. За категорією");
-        System.out.println("3. За розміром");
-        System.out.println("4. За діапазоном ціни");
-        System.out.println("0. Назад до головного меню");
-        List<Clothes> found;
-        switch (readInt(scanner, "Оберіть критерій", BACK, BY_PRICE)) {
-            case BY_BRAND:
-                found = store.findByBrand(readField(scanner, "Бренд (або його частина): ",
-                        v -> Clothes.checkText(v, "Бренд")));
-                break;
-            case BY_CATEGORY:
-                found = store.findByCategory(readField(scanner,
-                        "Категорія (Штани, Сорочка, Куртка, Сукня): ",
-                        v -> Clothes.checkText(v, "Категорія")));
-                break;
-            case BY_SIZE:
-                found = store.findBySize(readSize(scanner));
-                break;
-            case BY_PRICE:
-                found = readAndFindByPrice(scanner, store);
-                break;
-            default:
-                System.out.println("Повернення до головного меню.");
-                return;
-        }
-        printSearchResult(found);
-    }
-
-    /** Зчитує межі ціни (мінімальна не більша за максимальну) і виконує пошук. */
-    private static List<Clothes> readAndFindByPrice(Scanner scanner, Store store) {
-        while (true) {
-            System.out.println("Мінімальна ціна:");
-            double min = readPrice(scanner);
-            System.out.println("Максимальна ціна:");
-            double max = readPrice(scanner);
-            if (min <= max) {
-                return store.findByPrice(min, max);
-            }
-            System.out.println("Помилка: мінімальна ціна не може бути більшою за максимальну.");
-        }
-    }
-
-    /** Виводить знайдені об'єкти або повідомлення, що нічого не знайдено. */
-    private static void printSearchResult(List<Clothes> found) {
-        if (found.isEmpty()) {
-            System.out.println("За вказаним критерієм нічого не знайдено.");
-            return;
-        }
-        System.out.println("Знайдено об'єктів: " + found.size());
-        for (int i = 0; i < found.size(); i++) {
-            Clothes item = found.get(i);
-            System.out.println((i + 1) + ". [" + item.getCategory() + "] " + item);
+    /** Зчитує пункт меню; для нечислового вводу повертає -1. */
+    private static int readMenuChoice(Scanner scanner) {
+        System.out.print("Ваш вибір: ");
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 
@@ -204,22 +212,38 @@ public class Main {
         System.out.println("Позицій: " + store.size() + ", одиниць товару: " + store.getTotalQuantity());
     }
 
-    /** Зчитує пункт меню; для нечислового вводу повертає -1. */
-    private static int readMenuChoice(Scanner scanner) {
-        System.out.print("Ваш вибір: ");
-        try {
-            return Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+    /** Зчитує штани: спільні поля одягу, довжину та крій. */
+    private static Pants readPants(Scanner scanner) {
+        String brand = readText(scanner, "Бренд: ", "Бренд");
+        Size size = readSize(scanner);
+        String color = readText(scanner, "Колір: ", "Колір");
+        String material = readText(scanner, "Матеріал: ", "Матеріал");
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        int length = readInt(scanner, "Довжина, см", Pants.MIN_LENGTH, Pants.MAX_LENGTH);
+        Fit fit = readEnum(scanner, "Крій", Fit.values());
+        return new Pants(brand, size, color, material, price, quantity, length, fit);
+    }
+
+    /** Зчитує сорочку: спільні поля одягу, тип рукава та розмір коміра. */
+    private static Shirts readShirts(Scanner scanner) {
+        String brand = readText(scanner, "Бренд: ", "Бренд");
+        Size size = readSize(scanner);
+        String color = readText(scanner, "Колір: ", "Колір");
+        String material = readText(scanner, "Матеріал: ", "Матеріал");
+        double price = readPrice(scanner);
+        int quantity = readQuantity(scanner);
+        Sleeve sleeve = readEnum(scanner, "Рукав", Sleeve.values());
+        int neckSize = readInt(scanner, "Розмір коміра, см", Shirts.MIN_NECK, Shirts.MAX_NECK);
+        return new Shirts(brand, size, color, material, price, quantity, sleeve, neckSize);
     }
 
     /** Зчитує куртку: спільні поля одягу, сезон і наявність капюшона. */
     private static Jacket readJacket(Scanner scanner) {
-        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        String brand = readText(scanner, "Бренд: ", "Бренд");
         Size size = readSize(scanner);
-        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
-        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        String color = readText(scanner, "Колір: ", "Колір");
+        String material = readText(scanner, "Матеріал: ", "Матеріал");
         double price = readPrice(scanner);
         int quantity = readQuantity(scanner);
         Season season = readEnum(scanner, "Сезон", Season.values());
@@ -229,10 +253,10 @@ public class Main {
 
     /** Зчитує сукню: спільні поля одягу, довжину та призначення. */
     private static Dress readDress(Scanner scanner) {
-        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
+        String brand = readText(scanner, "Бренд: ", "Бренд");
         Size size = readSize(scanner);
-        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
-        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
+        String color = readText(scanner, "Колір: ", "Колір");
+        String material = readText(scanner, "Матеріал: ", "Матеріал");
         double price = readPrice(scanner);
         int quantity = readQuantity(scanner);
         int length = readInt(scanner, "Довжина, см", Dress.MIN_LENGTH, Dress.MAX_LENGTH);
@@ -253,32 +277,6 @@ public class Main {
             }
             System.out.println("Помилка: введіть \"так\" або \"ні\".");
         }
-    }
-
-    /** Зчитує штани: спільні поля одягу, довжину та крій. */
-    private static Pants readPants(Scanner scanner) {
-        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
-        Size size = readSize(scanner);
-        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
-        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
-        double price = readPrice(scanner);
-        int quantity = readQuantity(scanner);
-        int length = readInt(scanner, "Довжина, см", Pants.MIN_LENGTH, Pants.MAX_LENGTH);
-        Fit fit = readEnum(scanner, "Крій", Fit.values());
-        return new Pants(brand, size, color, material, price, quantity, length, fit);
-    }
-
-    /** Зчитує сорочку: спільні поля одягу, тип рукава та розмір коміра. */
-    private static Shirts readShirts(Scanner scanner) {
-        String brand = readField(scanner, "Бренд: ", v -> Clothes.checkText(v, "Бренд"));
-        Size size = readSize(scanner);
-        String color = readField(scanner, "Колір: ", v -> Clothes.checkText(v, "Колір"));
-        String material = readField(scanner, "Матеріал: ", v -> Clothes.checkText(v, "Матеріал"));
-        double price = readPrice(scanner);
-        int quantity = readQuantity(scanner);
-        Sleeve sleeve = readEnum(scanner, "Рукав", Sleeve.values());
-        int neckSize = readInt(scanner, "Розмір коміра, см", Shirts.MIN_NECK, Shirts.MAX_NECK);
-        return new Shirts(brand, size, color, material, price, quantity, sleeve, neckSize);
     }
 
     /** Зчитує ціле число від min до max, повторюючи запит для некоректного значення. */
@@ -306,12 +304,12 @@ public class Main {
         return values[readInt(scanner, "Номер", 1, values.length) - 1];
     }
 
-    /** Зчитує рядок і повторює запит, доки validator не прийме значення. */
-    private static String readField(Scanner scanner, String prompt, UnaryOperator<String> validator) {
+    /** Зчитує непорожній рядок, повторюючи запит для порожнього значення. */
+    private static String readText(Scanner scanner, String prompt, String fieldName) {
         while (true) {
             System.out.print(prompt);
             try {
-                return validator.apply(scanner.nextLine());
+                return Clothes.checkText(scanner.nextLine(), fieldName);
             } catch (IllegalArgumentException e) {
                 System.out.println("Помилка: " + e.getMessage());
             }
