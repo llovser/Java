@@ -105,4 +105,19 @@ class ComparatorTest {
         assertEquals("Levi's", store.getItems().get(0).getBrand());
         assertEquals("H&M", copy.get(0).getBrand());
     }
+
+    @Test
+    void shouldKeepOrderForEqualQuantitiesAndSizes() {
+        Pants first = new Pants("A", Size.M, "c", "m", 100, 5, 100, Fit.SLIM);
+        Pants second = new Pants("B", Size.M, "c", "m", 200, 5, 100, Fit.SLIM);
+        List<Clothes> list = new ArrayList<>();
+        list.add(second);
+        list.add(first);
+
+        list.sort(Main.quantityComparator());
+        assertSame(second, list.get(0));
+
+        list.sort(Main.sizeComparator());
+        assertSame(second, list.get(0));
+    }
 }
