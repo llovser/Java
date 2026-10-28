@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.Comparator;
 
 /** Консольне меню для роботи зі списком одягу. */
 public class Main {
@@ -22,6 +23,11 @@ public class Main {
     private static final int TYPE_SHIRTS = 2;
     private static final int TYPE_JACKET = 3;
     private static final int TYPE_DRESS = 4;
+
+    private static final int SORT_BY_PRICE = 1;
+    private static final int SORT_BY_QUANTITY = 2;
+    private static final int SORT_BY_SIZE = 3;
+    private static final int SORT_BY_BRAND = 4;
 
     /**
      * Показує меню, доки користувач не обере завершення роботи.
@@ -47,7 +53,7 @@ public class Main {
                     printAll(store);
                     break;
                 case SORTED:
-                    printSorted(store);
+                    sortObjects(scanner, store);
                     break;
                 case EXIT:
                     running = false;
@@ -191,11 +197,84 @@ public class Main {
         printItems(store, store.getItems());
     }
 
-    /** Виводить товари магазину, відсортовані за природним порядком (Comparable), не змінюючи магазин. */
-    private static void printSorted(Store store) {
+    /** Дає обрати критерій сортування, сортує копію списку магазину й виводить результат (0 - назад). */
+    private static void sortObjects(Scanner scanner, Store store) {
+        System.out.println();
+        System.out.println("--- Оберіть критерій сортування ---");
+        System.out.println("1. За ціною (від меншої до більшої)");
+        System.out.println("2. За кількістю (від більшої до меншої)");
+        System.out.println("3. За розміром (від XS до XXL)");
+        System.out.println("4. За брендом (за алфавітом)");
+        System.out.println("0. Повернутися в головне меню");
+        Comparator<Clothes> comparator;
+        String title;
+        switch (readInt(scanner, "Оберіть критерій", BACK, SORT_BY_BRAND)) {
+            case SORT_BY_PRICE:
+                comparator = priceComparator();
+                title = "за ціною";
+                break;
+            case SORT_BY_QUANTITY:
+                comparator = quantityComparator();
+                title = "за кількістю";
+                break;
+            case SORT_BY_SIZE:
+                comparator = sizeComparator();
+                title = "за розміром";
+                break;
+            case SORT_BY_BRAND:
+                comparator = brandComparator();
+                title = "за брендом";
+                break;
+            default:
+                System.out.println("Повернення до головного меню.");
+                return;
+        }
         List<Clothes> items = store.getItems();
-        items.sort(null);
+        items.sort(comparator);
+        if (!items.isEmpty()) {
+            System.out.println("Відсортовано " + title + ":");
+        }
         printItems(store, items);
+    }
+
+    /** Повертає компаратор за ціною (від меншої до більшої). */
+    static Comparator<Clothes> priceComparator() {
+        return new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                return Double.compare(o1.getPrice(), o2.getPrice());
+            }
+        };
+    }
+
+    /** Повертає компаратор за кількістю (від більшої до меншої). */
+    static Comparator<Clothes> quantityComparator() {
+        return new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                return Integer.compare(o2.getQuantity(), o1.getQuantity());
+            }
+        };
+    }
+
+    /** Повертає компаратор за розміром (у порядку XS, S, M, L, XL, XXL). */
+    static Comparator<Clothes> sizeComparator() {
+        return new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                return o1.getSize().compareTo(o2.getSize());
+            }
+        };
+    }
+
+    /** Повертає компаратор за брендом (природний порядок Comparable). */
+    static Comparator<Clothes> brandComparator() {
+        return new Comparator<Clothes>() {
+            @Override
+            public int compare(Clothes o1, Clothes o2) {
+                return o1.compareTo(o2);
+            }
+        };
     }
 
     /** Виводить список товарів із підсумком або повідомлення, що магазин порожній. */
