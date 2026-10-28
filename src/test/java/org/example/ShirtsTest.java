@@ -45,12 +45,12 @@ class ShirtsTest {
     @Test
     void shouldStoreDifferentTypesInOneList() {
         List<Clothes> list = new ArrayList<>();
-        list.add(new Clothes("Zara", "Куртка", Size.L, "сірий", "вовна", 3000, 1));
+        list.add(new Jacket("Zara", Size.L, "сірий", "вовна", 3000, 1, Season.WINTER, false));
         list.add(new Pants("Levi's", Size.M, "синій", "денім", 1500, 4, 100, Fit.SLIM));
         list.add(createValid());
 
         assertEquals(3, list.size());
-        assertEquals("Одяг", list.get(0).getCategory());
+        assertEquals("Куртка", list.get(0).getCategory());
         assertEquals("Штани", list.get(1).getCategory());
         assertEquals("Сорочка", list.get(2).getCategory());
         assertTrue(list.get(2).toString().startsWith("Shirts{"));
