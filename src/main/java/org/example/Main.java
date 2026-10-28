@@ -239,42 +239,22 @@ public class Main {
 
     /** Повертає компаратор за ціною (від меншої до більшої). */
     static Comparator<Clothes> priceComparator() {
-        return new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                return Double.compare(o1.getPrice(), o2.getPrice());
-            }
-        };
+        return (o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice());
     }
 
     /** Повертає компаратор за кількістю (від більшої до меншої). */
     static Comparator<Clothes> quantityComparator() {
-        return new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                return Integer.compare(o2.getQuantity(), o1.getQuantity());
-            }
-        };
+        return (o1, o2) -> Integer.compare(o2.getQuantity(), o1.getQuantity());
     }
 
     /** Повертає компаратор за розміром (у порядку XS, S, M, L, XL, XXL). */
     static Comparator<Clothes> sizeComparator() {
-        return new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                return o1.getSize().compareTo(o2.getSize());
-            }
-        };
+        return (o1, o2) -> o1.getSize().compareTo(o2.getSize());
     }
 
     /** Повертає компаратор за брендом (природний порядок Comparable). */
     static Comparator<Clothes> brandComparator() {
-        return new Comparator<Clothes>() {
-            @Override
-            public int compare(Clothes o1, Clothes o2) {
-                return o1.compareTo(o2);
-            }
-        };
+        return (o1, o2) -> o1.compareTo(o2);
     }
 
     /** Виводить список товарів із підсумком або повідомлення, що магазин порожній. */
