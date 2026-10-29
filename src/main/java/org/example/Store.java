@@ -51,10 +51,10 @@ public class Store {
      */
     public boolean addNewClothes(Clothes cl, int quantity) {
         if (cl == null) {
-            throw new IllegalArgumentException("Товар не може бути порожнім.");
+            throw new InvalidFieldValueException("Товар не може бути порожнім.");
         }
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Кількість для додавання має бути додатною.");
+            throw new InvalidFieldValueException("Кількість для додавання має бути додатною.");
         }
         for (Clothes item : items) {
             if (item.equals(cl)) {
@@ -69,21 +69,18 @@ public class Store {
 
     /**
      * Замінює існуючий товар новим (UUID зберігається); товар шукається за equals.
-     *
-     * @return true, якщо оновлено; false, якщо існуючого товару в колекції немає
-     * @throws IllegalArgumentException якщо дані null або такий товар уже є в колекції
      */
     public boolean update(Clothes existingObject, Clothes newObject) {
         if (existingObject == null || newObject == null) {
-            throw new IllegalArgumentException("Товар не може бути порожнім.");
+            throw new InvalidFieldValueException("Товар не може бути порожнім.");
         }
         int index = indexOf(existingObject);
         if (index < 0) {
-            return false;
+            throw new ObjectNotFoundException("Об'єкт не знайдено в магазині.");
         }
         for (int i = 0; i < items.size(); i++) {
             if (i != index && items.get(i).equals(newObject)) {
-                throw new IllegalArgumentException("Товар із такими даними вже є в магазині.");
+                throw new DuplicateObjectException("Товар із такими даними вже є в магазині.");
             }
         }
         newObject.restoreUuid(items.get(index).getUuid());
@@ -92,17 +89,15 @@ public class Store {
     }
 
     /**
-     * Видаляє товар із колекції; товар шукається за equals.
-     *
-     * @return true, якщо видалено; false, якщо товару в колекції немає
+     * Видаляє товар із колекції; товар шукається за equals.є
      */
     public boolean delete(Clothes existingObject) {
         if (existingObject == null) {
-            return false;
+            throw new InvalidFieldValueException("Товар не може бути порожнім.");
         }
         int index = indexOf(existingObject);
         if (index < 0) {
-            return false;
+            throw new ObjectNotFoundException("Об'єкт не знайдено в магазині.");
         }
         items.remove(index);
         return true;

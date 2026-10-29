@@ -18,7 +18,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
     /**
      * Створює об'єкт одягу.
      *
-     * @throws IllegalArgumentException якщо будь-яке значення некоректне
+     * @throws InvalidFieldValueException якщо будь-яке значення некоректне
      */
     public Clothes(String brand, String type, Size size, String color,
                    String material, double price, int quantity) {
@@ -40,7 +40,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
     /** Відновлює збережений UUID (використовується під час читання з файлу). */
     void restoreUuid(UUID uuid) {
         if (uuid == null) {
-            throw new IllegalArgumentException("UUID не може бути порожнім.");
+            throw new InvalidFieldValueException("UUID не може бути порожнім.");
         }
         this.uuid = uuid;
     }
@@ -50,7 +50,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return brand;
     }
 
-    /** Встановлює бренд (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює бренд (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setBrand(String brand) {
         this.brand = checkText(brand, "Бренд");
     }
@@ -60,7 +60,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return type;
     }
 
-    /** Встановлює тип (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює тип (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setType(String type) {
         this.type = checkText(type, "Тип");
     }
@@ -70,7 +70,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return size;
     }
 
-    /** Встановлює розмір (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює розмір (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setSize(Size size) {
         this.size = checkSize(size);
     }
@@ -80,7 +80,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return color;
     }
 
-    /** Встановлює колір (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює колір (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setColor(String color) {
         this.color = checkText(color, "Колір");
     }
@@ -90,7 +90,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return material;
     }
 
-    /** Встановлює матеріал (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює матеріал (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setMaterial(String material) {
         this.material = checkText(material, "Матеріал");
     }
@@ -100,7 +100,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return price;
     }
 
-    /** Встановлює ціну (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює ціну (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setPrice(double price) {
         this.price = checkPrice(price);
     }
@@ -110,7 +110,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return quantity;
     }
 
-    /** Встановлює кількість (кидає IllegalArgumentException, якщо значення некоректне). */
+    /** Встановлює кількість (кидає InvalidFieldValueException, якщо значення некоректне). */
     public void setQuantity(int quantity) {
         this.quantity = checkQuantity(quantity);
     }
@@ -120,7 +120,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
      */
     public static String checkText(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " не може бути порожнім.");
+            throw new InvalidFieldValueException(fieldName + " не може бути порожнім.");
         }
         return value.trim();
     }
@@ -130,7 +130,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
      */
     public static Size checkSize(Size size) {
         if (size == null) {
-            throw new IllegalArgumentException("Розмір не може бути порожнім.");
+            throw new InvalidFieldValueException("Розмір не може бути порожнім.");
         }
         return size;
     }
@@ -140,7 +140,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
      */
     public static double checkPrice(double price) {
         if (Double.isNaN(price) || Double.isInfinite(price) || price <= 0) {
-            throw new IllegalArgumentException("Ціна має бути додатним числом.");
+            throw new InvalidFieldValueException("Ціна має бути додатним числом.");
         }
         return price;
     }
@@ -150,7 +150,7 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
      */
     public static int checkQuantity(int quantity) {
         if (quantity < 0) {
-            throw new IllegalArgumentException("Кількість не може бути від'ємною.");
+            throw new InvalidFieldValueException("Кількість не може бути від'ємною.");
         }
         return quantity;
     }

@@ -14,7 +14,7 @@ public class Pants extends Clothes {
     /**
      * Створює штани.
      *
-     * @throws IllegalArgumentException якщо будь-яке значення некоректне
+     * @throws InvalidFieldValueException якщо будь-яке значення некоректне
      */
     public Pants(String brand, Size size, String color, String material,
                  double price, int quantity, int length, Fit fit) {
@@ -46,7 +46,7 @@ public class Pants extends Clothes {
     /** Перевіряє довжину штанів. */
     public static int checkLength(int length) {
         if (length < MIN_LENGTH || length > MAX_LENGTH) {
-            throw new IllegalArgumentException("Довжина має бути від " + MIN_LENGTH
+            throw new InvalidFieldValueException("Довжина має бути від " + MIN_LENGTH
                     + " до " + MAX_LENGTH + " см.");
         }
         return length;
@@ -55,7 +55,7 @@ public class Pants extends Clothes {
     /** Перевіряє, що крій вказано. */
     public static Fit checkFit(Fit fit) {
         if (fit == null) {
-            throw new IllegalArgumentException("Крій не може бути порожнім.");
+            throw new InvalidFieldValueException("Крій не може бути порожнім.");
         }
         return fit;
     }

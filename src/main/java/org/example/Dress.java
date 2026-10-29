@@ -14,7 +14,7 @@ public class Dress extends Clothes {
     /**
      * Створює сукню.
      *
-     * @throws IllegalArgumentException якщо будь-яке значення некоректне
+     * @throws InvalidFieldValueException якщо будь-яке значення некоректне
      */
     public Dress(String brand, Size size, String color, String material,
                  double price, int quantity, int length, Occasion occasion) {
@@ -46,7 +46,7 @@ public class Dress extends Clothes {
     /** Перевіряє довжину сукні. */
     public static int checkLength(int length) {
         if (length < MIN_LENGTH || length > MAX_LENGTH) {
-            throw new IllegalArgumentException("Довжина має бути від " + MIN_LENGTH
+            throw new InvalidFieldValueException("Довжина має бути від " + MIN_LENGTH
                     + " до " + MAX_LENGTH + " см.");
         }
         return length;
@@ -55,7 +55,7 @@ public class Dress extends Clothes {
     /** Перевіряє, що призначення вказано. */
     public static Occasion checkOccasion(Occasion occasion) {
         if (occasion == null) {
-            throw new IllegalArgumentException("Призначення не може бути порожнім.");
+            throw new InvalidFieldValueException("Призначення не може бути порожнім.");
         }
         return occasion;
     }

@@ -227,12 +227,9 @@ public class Main {
             if (!editAttribute(scanner, modified)) {
                 return;
             }
-            if (store.update(existing, modified)) {
-                System.out.println("Об'єкт змінено: " + modified);
-            } else {
-                System.out.println("Об'єкт не знайдено, зміни не застосовано.");
-            }
-        } catch (IllegalArgumentException e) {
+            store.update(existing, modified);
+            System.out.println("Об'єкт змінено: " + modified);
+        } catch (ObjectNotFoundException | IllegalArgumentException e) {
             System.out.println("Помилка: " + e.getMessage());
         }
     }
@@ -247,10 +244,11 @@ public class Main {
             System.out.println("Видалення скасовано.");
             return;
         }
-        if (store.delete(existing)) {
+        try {
+            store.delete(existing);
             System.out.println("Об'єкт видалено.");
-        } else {
-            System.out.println("Об'єкт не знайдено, нічого не видалено.");
+        } catch (ObjectNotFoundException | IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
         }
     }
 
