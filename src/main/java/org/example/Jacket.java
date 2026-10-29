@@ -49,6 +49,14 @@ public class Jacket extends Clothes {
     }
 
     @Override
+    public Jacket copy() {
+        Jacket result = new Jacket(getBrand(), getSize(), getColor(), getMaterial(),
+                getPrice(), getQuantity(), season, hooded);
+        copyIdentityTo(result);
+        return result;
+    }
+
+    @Override
     public String getCategory() {
         return "Куртка";
     }

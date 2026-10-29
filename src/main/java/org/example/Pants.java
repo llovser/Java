@@ -61,6 +61,14 @@ public class Pants extends Clothes {
     }
 
     @Override
+    public Pants copy() {
+        Pants result = new Pants(getBrand(), getSize(), getColor(), getMaterial(),
+                getPrice(), getQuantity(), length, fit);
+        copyIdentityTo(result);
+        return result;
+    }
+
+    @Override
     public String getCategory() {
         return "Штани";
     }

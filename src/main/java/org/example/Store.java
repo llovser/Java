@@ -67,6 +67,57 @@ public class Store {
         return true;
     }
 
+    /**
+     * Замінює існуючий товар новим (UUID зберігається); товар шукається за equals.
+     *
+     * @return true, якщо оновлено; false, якщо існуючого товару в колекції немає
+     * @throws IllegalArgumentException якщо дані null або такий товар уже є в колекції
+     */
+    public boolean update(Clothes existingObject, Clothes newObject) {
+        if (existingObject == null || newObject == null) {
+            throw new IllegalArgumentException("Товар не може бути порожнім.");
+        }
+        int index = indexOf(existingObject);
+        if (index < 0) {
+            return false;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (i != index && items.get(i).equals(newObject)) {
+                throw new IllegalArgumentException("Товар із такими даними вже є в магазині.");
+            }
+        }
+        newObject.restoreUuid(items.get(index).getUuid());
+        items.set(index, newObject);
+        return true;
+    }
+
+    /**
+     * Видаляє товар із колекції; товар шукається за equals.
+     *
+     * @return true, якщо видалено; false, якщо товару в колекції немає
+     */
+    public boolean delete(Clothes existingObject) {
+        if (existingObject == null) {
+            return false;
+        }
+        int index = indexOf(existingObject);
+        if (index < 0) {
+            return false;
+        }
+        items.remove(index);
+        return true;
+    }
+
+    /** Повертає індекс товару в колекції за equals або -1. */
+    private int indexOf(Clothes object) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).equals(object)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     /** Повертає товари, бренд яких містить заданий текст (без урахування регістру). */
     public List<Clothes> findByBrand(String text) {
         List<Clothes> result = new ArrayList<>();

@@ -14,6 +14,14 @@ class ClothesTest {
         }
 
         @Override
+        public Item copy() {
+            Item result = new Item(getBrand(), getType(), getSize(), getColor(), getMaterial(),
+                    getPrice(), getQuantity());
+            copyIdentityTo(result);
+            return result;
+        }
+
+        @Override
         public String getCategory() {
             return "Тест";
         }

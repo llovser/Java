@@ -186,6 +186,15 @@ public abstract class Clothes implements Comparable<Clothes>, Identifiable {
         return result;
     }
 
+    /** Повертає незалежну копію об'єкта з тим самим UUID. */
+    public abstract Clothes copy();
+
+    /** Переносить у копію тип і UUID оригіналу (викликається з copy у похідних класах). */
+    protected void copyIdentityTo(Clothes target) {
+        target.type = type;
+        target.uuid = uuid;
+    }
+
     /** Повертає короткий опис: категорія, бренд і UUID. */
     public String toShortString() {
         return getCategory() + ": " + brand + " | UUID: " + uuid;

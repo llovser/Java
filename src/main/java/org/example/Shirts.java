@@ -61,6 +61,14 @@ public class Shirts extends Clothes {
     }
 
     @Override
+    public Shirts copy() {
+        Shirts result = new Shirts(getBrand(), getSize(), getColor(), getMaterial(),
+                getPrice(), getQuantity(), sleeve, neckSize);
+        copyIdentityTo(result);
+        return result;
+    }
+
+    @Override
     public String getCategory() {
         return "Сорочка";
     }
