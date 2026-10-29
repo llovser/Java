@@ -10,9 +10,11 @@ public class Main {
 
     private static final int SEARCH = 1;
     private static final int CREATE = 2;
-    private static final int SHOW = 3;
-    private static final int SORTED = 4;
-    private static final int EXIT = 5;
+    private static final int UPDATE = 3;
+    private static final int DELETE = 4;
+    private static final int SHOW = 5;
+    private static final int SORTED = 6;
+    private static final int EXIT = 7;
 
     private static final int BY_BRAND = 1;
     private static final int BY_CATEGORY = 2;
@@ -51,6 +53,12 @@ public class Main {
                 case CREATE:
                     createObject(scanner, store);
                     break;
+                case UPDATE:
+                    modifyObject(scanner, store);
+                    break;
+                case DELETE:
+                    deleteObject(scanner, store);
+                    break;
                 case SHOW:
                     printAll(store);
                     break;
@@ -78,9 +86,11 @@ public class Main {
         System.out.println("=== Меню ===");
         System.out.println("1. Пошук об'єкта");
         System.out.println("2. Створити новий об'єкт");
-        System.out.println("3. Вивести інформацію про всі об'єкти");
-        System.out.println("4. Вивести відсортовану інформацію про всі об'єкти");
-        System.out.println("5. Завершити роботу");
+        System.out.println("3. Модифікувати об'єкт");
+        System.out.println("4. Видалити об'єкт");
+        System.out.println("5. Вивести інформацію про всі об'єкти");
+        System.out.println("6. Вивести відсортовану інформацію про всі об'єкти");
+        System.out.println("7. Завершити роботу");
     }
 
     /** Дає обрати критерій пошуку, виконує його й виводить результат (0 - назад). */
@@ -203,6 +213,136 @@ public class Main {
             }
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    /** Дає обрати товар зі списку, змінити один його атрибут і замінити товар у магазині (0 - назад). */
+    private static void modifyObject(Scanner scanner, Store store) {
+        Clothes existing = chooseObject(scanner, store, "модифікації");
+        if (existing == null) {
+            return;
+        }
+        Clothes modified = existing.copy();
+        try {
+            if (!editAttribute(scanner, modified)) {
+                return;
+            }
+            if (store.update(existing, modified)) {
+                System.out.println("Об'єкт змінено: " + modified);
+            } else {
+                System.out.println("Об'єкт не знайдено, зміни не застосовано.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
+        }
+    }
+
+    /** Дає обрати товар зі списку й видаляє його після підтвердження (0 - назад). */
+    private static void deleteObject(Scanner scanner, Store store) {
+        Clothes existing = chooseObject(scanner, store, "видалення");
+        if (existing == null) {
+            return;
+        }
+        if (!readYesNo(scanner, "Видалити \"" + existing.getBrand() + "\"?")) {
+            System.out.println("Видалення скасовано.");
+            return;
+        }
+        if (store.delete(existing)) {
+            System.out.println("Об'єкт видалено.");
+        } else {
+            System.out.println("Об'єкт не знайдено, нічого не видалено.");
+        }
+    }
+
+    /** Виводить нумерований список і повертає обраний товар або null (порожній магазин, 0 - назад). */
+    private static Clothes chooseObject(Scanner scanner, Store store, String action) {
+        List<Clothes> items = store.getItems();
+        if (items.isEmpty()) {
+            System.out.println("Магазин порожній.");
+            return null;
+        }
+        printItems(store, items);
+        int number = readInt(scanner, "Номер об'єкта для " + action + " (0 - назад)", BACK, items.size());
+        return number == BACK ? null : items.get(number - 1);
+    }
+
+    /** Зчитує атрибут і нове значення та застосовує їх до копії; false, якщо обрано "назад". */
+    private static boolean editAttribute(Scanner scanner, Clothes item) {
+        System.out.println("Оберіть атрибут:");
+        System.out.println("1. Бренд\n2. Розмір\n3. Колір\n4. Матеріал\n5. Ціна\n6. Кількість");
+        int max = 6;
+        if (item instanceof Pants) {
+            System.out.println("7. Довжина\n8. Крій");
+            max = 8;
+        } else if (item instanceof Shirts) {
+            System.out.println("7. Рукав\n8. Розмір коміра");
+            max = 8;
+        } else if (item instanceof Jacket) {
+            System.out.println("7. Сезон\n8. Капюшон");
+            max = 8;
+        } else if (item instanceof Dress) {
+            System.out.println("7. Довжина\n8. Призначення");
+            max = 8;
+        }
+        int choice = readInt(scanner, "Атрибут (0 - назад)", BACK, max);
+        switch (choice) {
+            case BACK:
+                return false;
+            case 1:
+                item.setBrand(readText(scanner, "Новий бренд: ", "Бренд"));
+                break;
+            case 2:
+                item.setSize(readSize(scanner));
+                break;
+            case 3:
+                item.setColor(readText(scanner, "Новий колір: ", "Колір"));
+                break;
+            case 4:
+                item.setMaterial(readText(scanner, "Новий матеріал: ", "Матеріал"));
+                break;
+            case 5:
+                item.setPrice(readPrice(scanner));
+                break;
+            case 6:
+                item.setQuantity(readQuantity(scanner));
+                break;
+            default:
+                editSpecificAttribute(scanner, item, choice);
+                break;
+        }
+        return true;
+    }
+
+    /** Змінює атрибут, специфічний для конкретного типу одягу (пункти 7 і 8). */
+    private static void editSpecificAttribute(Scanner scanner, Clothes item, int choice) {
+        if (item instanceof Pants) {
+            Pants pants = (Pants) item;
+            if (choice == 7) {
+                pants.setLength(readInt(scanner, "Довжина, см", Pants.MIN_LENGTH, Pants.MAX_LENGTH));
+            } else {
+                pants.setFit(readEnum(scanner, "Крій", Fit.values()));
+            }
+        } else if (item instanceof Shirts) {
+            Shirts shirt = (Shirts) item;
+            if (choice == 7) {
+                shirt.setSleeve(readEnum(scanner, "Рукав", Sleeve.values()));
+            } else {
+                shirt.setNeckSize(readInt(scanner, "Розмір коміра, см", Shirts.MIN_NECK, Shirts.MAX_NECK));
+            }
+        } else if (item instanceof Jacket) {
+            Jacket jacket = (Jacket) item;
+            if (choice == 7) {
+                jacket.setSeason(readEnum(scanner, "Сезон", Season.values()));
+            } else {
+                jacket.setHooded(readYesNo(scanner, "З капюшоном?"));
+            }
+        } else if (item instanceof Dress) {
+            Dress dress = (Dress) item;
+            if (choice == 7) {
+                dress.setLength(readInt(scanner, "Довжина, см", Dress.MIN_LENGTH, Dress.MAX_LENGTH));
+            } else {
+                dress.setOccasion(readEnum(scanner, "Призначення", Occasion.values()));
+            }
         }
     }
 
