@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /** Магазин одягу: володіє колекцією товарів, кількість кожного зберігається в самому товарі. */
 public class Store {
@@ -109,5 +110,32 @@ public class Store {
             }
         }
         return result;
+    }
+
+    /**
+     * Знаходить товар за UUID, записаним рядком.
+     */
+    public Clothes findByUuid(String text) {
+        UUID uuid = parseUuid(text);
+        for (Clothes item : items) {
+            if (item.getUuid().equals(uuid)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Перетворює рядок на UUID.
+     */
+    public static UUID parseUuid(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            throw new IllegalArgumentException("UUID не може бути порожнім.");
+        }
+        try {
+            return UUID.fromString(text.trim());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Некоректний формат UUID: " + text.trim());
+        }
     }
 }
