@@ -14,7 +14,7 @@ public class Shirts extends Clothes {
     /**
      * Створює сорочку.
      *
-     * @throws IllegalArgumentException якщо будь-яке значення некоректне
+     * @throws InvalidFieldValueException якщо будь-яке значення некоректне
      */
     public Shirts(String brand, Size size, String color, String material,
                   double price, int quantity, Sleeve sleeve, int neckSize) {
@@ -46,7 +46,7 @@ public class Shirts extends Clothes {
     /** Перевіряє, що тип рукава вказано. */
     public static Sleeve checkSleeve(Sleeve sleeve) {
         if (sleeve == null) {
-            throw new IllegalArgumentException("Тип рукава не може бути порожнім.");
+            throw new InvalidFieldValueException("Тип рукава не може бути порожнім.");
         }
         return sleeve;
     }
@@ -54,7 +54,7 @@ public class Shirts extends Clothes {
     /** Перевіряє розмір коміра. */
     public static int checkNeckSize(int neckSize) {
         if (neckSize < MIN_NECK || neckSize > MAX_NECK) {
-            throw new IllegalArgumentException("Розмір коміра має бути від " + MIN_NECK
+            throw new InvalidFieldValueException("Розмір коміра має бути від " + MIN_NECK
                     + " до " + MAX_NECK + " см.");
         }
         return neckSize;

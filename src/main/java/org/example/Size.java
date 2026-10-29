@@ -11,7 +11,7 @@ public enum Size {
      */
     public static Size fromString(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Розмір не може бути порожнім.");
+            throw new InvalidFieldValueException("Розмір не може бути порожнім.");
         }
         String text = value.trim().toUpperCase(Locale.ROOT);
         for (Size size : values()) {
@@ -19,7 +19,7 @@ public enum Size {
                 return size;
             }
         }
-        throw new IllegalArgumentException("Невідомий розмір: " + value
+        throw new InvalidFieldValueException("Невідомий розмір: " + value
                 + " (допустимо: XS, S, M, L, XL, XXL).");
     }
 }

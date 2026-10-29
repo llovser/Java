@@ -11,7 +11,7 @@ public class Jacket extends Clothes {
     /**
      * Створює куртку.
      *
-     * @throws IllegalArgumentException якщо будь-яке значення некоректне
+     * @throws InvalidFieldValueException якщо будь-яке значення некоректне
      */
     public Jacket(String brand, Size size, String color, String material,
                   double price, int quantity, Season season, boolean hooded) {
@@ -43,7 +43,7 @@ public class Jacket extends Clothes {
     /** Перевіряє, що сезон вказано. */
     public static Season checkSeason(Season season) {
         if (season == null) {
-            throw new IllegalArgumentException("Сезон не може бути порожнім.");
+            throw new InvalidFieldValueException("Сезон не може бути порожнім.");
         }
         return season;
     }

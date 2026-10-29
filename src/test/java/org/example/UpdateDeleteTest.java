@@ -1,7 +1,6 @@
 package org.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,9 +39,9 @@ class UpdateDeleteTest {
     }
 
     @Test
-    void updateMissingReturnsFalse() {
+    void updateMissingThrowsObjectNotFound() {
         Pants other = new Pants("Other", Size.S, "червоний", "льон", 500, 1, 90, Fit.SLIM);
-        assertFalse(store.update(other, other.copy()));
+        assertThrows(ObjectNotFoundException.class, () -> store.update(other, other.copy()));
         assertEquals(2, store.size());
     }
 
@@ -53,26 +52,27 @@ class UpdateDeleteTest {
         store.addNewClothes(changed.copy(), 1);
         Shirts duplicate = shirt.copy();
         duplicate.setBrand("Zara2");
-        assertThrows(IllegalArgumentException.class, () -> store.update(shirt, duplicate));
+        assertThrows(DuplicateObjectException.class, () -> store.update(shirt, duplicate));
     }
 
     @Test
     void updateWithNullThrows() {
-        assertThrows(IllegalArgumentException.class, () -> store.update(null, pants));
-        assertThrows(IllegalArgumentException.class, () -> store.update(pants, null));
+        assertThrows(InvalidFieldValueException.class, () -> store.update(null, pants));
+        assertThrows(InvalidFieldValueException.class, () -> store.update(pants, null));
     }
 
     @Test
     void deleteRemovesObject() {
         assertTrue(store.delete(pants));
         assertEquals(1, store.size());
-        assertFalse(store.delete(pants));
+        assertThrows(ObjectNotFoundException.class, () -> store.delete(pants));
     }
 
     @Test
-    void deleteFromEmptyStoreReturnsFalse() {
-        assertFalse(new Store("Порожній").delete(pants));
-        assertFalse(store.delete(null));
+    void deleteFromEmptyStoreThrowsObjectNotFound() {
+        Store empty = new Store("Порожній");
+        assertThrows(ObjectNotFoundException.class, () -> empty.delete(pants));
+        assertThrows(InvalidFieldValueException.class, () -> store.delete(null));
     }
 
     @Test
