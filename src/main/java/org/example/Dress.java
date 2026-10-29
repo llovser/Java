@@ -61,6 +61,14 @@ public class Dress extends Clothes {
     }
 
     @Override
+    public Dress copy() {
+        Dress result = new Dress(getBrand(), getSize(), getColor(), getMaterial(),
+                getPrice(), getQuantity(), length, occasion);
+        copyIdentityTo(result);
+        return result;
+    }
+
+    @Override
     public String getCategory() {
         return "Сукня";
     }
