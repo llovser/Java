@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ public class Main {
     private static final int BY_CATEGORY = 2;
     private static final int BY_SIZE = 3;
     private static final int BY_PRICE = 4;
+    private static final int BY_UUID = 5;
 
     private static final int BACK = 0;
     private static final int TYPE_PANTS = 1;
@@ -89,9 +91,10 @@ public class Main {
         System.out.println("2. За категорією");
         System.out.println("3. За розміром");
         System.out.println("4. За діапазоном ціни");
+        System.out.println("5. За UUID");
         System.out.println("0. Назад до головного меню");
         List<Clothes> found;
-        switch (readInt(scanner, "Оберіть критерій", BACK, BY_PRICE)) {
+        switch (readInt(scanner, "Оберіть критерій", BACK, BY_UUID)) {
             case BY_BRAND:
                 found = store.findByBrand(readText(scanner, "Бренд (або його частина): ", "Бренд"));
                 break;
@@ -105,11 +108,16 @@ public class Main {
             case BY_PRICE:
                 found = readAndFindByPrice(scanner, store);
                 break;
+            case BY_UUID:
+                found = readAndFindByUuid(scanner, store);
+                break;
             default:
                 System.out.println("Повернення до головного меню.");
                 return;
         }
-        printSearchResult(found);
+        if (found != null) {
+            printSearchResult(found);
+        }
     }
 
     /** Зчитує межі ціни (мінімальна не більша за максимальну) і виконує пошук. */
@@ -126,10 +134,26 @@ public class Main {
         }
     }
 
+    /** Зчитує UUID і шукає за ним товар; для некоректного формату повідомляє про помилку й повертає null. */
+    private static List<Clothes> readAndFindByUuid(Scanner scanner, Store store) {
+        List<Clothes> result = new ArrayList<>();
+        System.out.print("UUID: ");
+        try {
+            Clothes item = store.findByUuid(scanner.nextLine());
+            if (item != null) {
+                result.add(item);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка: " + e.getMessage());
+            return null;
+        }
+        return result;
+    }
+
     /** Виводить знайдені об'єкти або повідомлення, що нічого не знайдено. */
     private static void printSearchResult(List<Clothes> found) {
         if (found.isEmpty()) {
-            System.out.println("За вказаним критерієм нічого не знайдено.");
+            System.out.println("Не знайдено: за вказаним критерієм об'єктів немає.");
             return;
         }
         System.out.println("Знайдено об'єктів: " + found.size());
