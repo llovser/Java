@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /** Читання та запис колекції одягу у текстовий файл: один об'єкт у рядку, поля через ';'. */
 public class FileStorage {
@@ -41,6 +42,7 @@ public class FileStorage {
             append(line, String.valueOf(dress.getLength()));
             append(line, dress.getOccasion().name());
         }
+        append(line, item.getUuid().toString());
         return line.toString();
     }
 
@@ -51,6 +53,33 @@ public class FileStorage {
      */
     public static Clothes parseLine(String line) {
         List<String> f = split(line);
+        UUID uuid = null;
+        int count = fieldCount(f.get(0));
+        if (count > 0 && f.size() == count + 1) {
+            uuid = Store.parseUuid(f.remove(count));
+        }
+        Clothes item = create(f);
+        if (uuid != null) {
+            item.restoreUuid(uuid);
+        }
+        return item;
+    }
+
+    /** Повертає кількість полів рядка без UUID для відомого типу або 0 для невідомого. */
+    private static int fieldCount(String type) {
+        switch (type) {
+            case "Pants":
+            case "Shirts":
+            case "Jacket":
+            case "Dress":
+                return 9;
+            default:
+                return 0;
+        }
+    }
+
+    /** Створює об'єкт за полями рядка (без UUID). */
+    private static Clothes create(List<String> f) {
         String type = f.get(0);
         switch (type) {
             case "Pants":

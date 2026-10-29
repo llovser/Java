@@ -1,10 +1,12 @@
 package org.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /** Абстрактний одяг: бренд, тип, розмір, колір, матеріал, ціна та кількість на складі. */
-public abstract class Clothes implements Comparable<Clothes> {
+public abstract class Clothes implements Comparable<Clothes>, Identifiable {
 
+    private UUID uuid = UUID.randomUUID();
     private String brand;
     private String type;
     private Size size;
@@ -27,6 +29,20 @@ public abstract class Clothes implements Comparable<Clothes> {
         this.material = checkText(material, "Матеріал");
         this.price = checkPrice(price);
         this.quantity = checkQuantity(quantity);
+    }
+
+    /** Повертає UUID, створений автоматично під час створення об'єкта. */
+    @Override
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    /** Відновлює збережений UUID (використовується під час читання з файлу). */
+    void restoreUuid(UUID uuid) {
+        if (uuid == null) {
+            throw new IllegalArgumentException("UUID не може бути порожнім.");
+        }
+        this.uuid = uuid;
     }
 
     /** Повертає бренд. */
@@ -170,10 +186,15 @@ public abstract class Clothes implements Comparable<Clothes> {
         return result;
     }
 
+    /** Повертає короткий опис: категорія, бренд і UUID. */
+    public String toShortString() {
+        return getCategory() + ": " + brand + " | UUID: " + uuid;
+    }
+
     /** Повертає текстове подання об'єкта. */
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{brand='" + brand + "', type='" + type + "', size='" + size
+        return getClass().getSimpleName() + "{uuid=" + uuid + ", brand='" + brand + "', type='" + type + "', size='" + size
                 + "', color='" + color + "', material='" + material
                 + "', price=" + price + ", quantity=" + quantity + "}";
     }
