@@ -1,6 +1,5 @@
-Shirts;Zara;S;сірий;бавовна;500.0;1;SHORT;40
-Pants;Levi's;M;синій;денім;1500.0;6;100;SLIM
-Shirts;H&M;S;білий;бавовна;900.0;7;LONG;38
-Jacket;North Face;L;чорний;поліестер;6000.0;2;WINTER;true
-Dress;Mango;M;червоний;віскоза;2200.0;3;110;EVENING
-Shirts;YSL;M;Black;Denim;400.0;2;SHORT;30
+Shirts;Zara;S;сірий;бавовна;500.0;1;SHORT;40;0f2f8415-3e97-44a4-a1de-2befc0a16d31
+Pants;Levi's;M;синій;денім;1500.0;4;100;SLIM;4a4229e2-eaf3-4a8a-8a0b-a74fffeba9fa
+Shirts;H&M;S;білий;бавовна;900.0;7;LONG;38;9dd11bda-2286-47e1-a41c-250e6f4df191
+Jacket;North Face;L;чорний;поліестер;6000.0;2;WINTER;true;af6a6ef3-4439-42b3-af69-d217476772c5
+Dress;Mango;M;червоний;віскоза;2200.0;3;110;EVENING;dc129fbd-6d1a-49f7-babf-c9266806a6e4
